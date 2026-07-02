@@ -1,0 +1,7 @@
+module GeneralQml
+singleton Colors 1.0 Colors.qml
+singleton Fonts 1.0 Fonts.qml
+BaseScreen 1.0 BaseScreen.qml
+MyButton 1.0 MyButton.qml
+MyRectangle 1.0 MyRectangle.qml
+MyTextField 1.0 MyTextField.qml
