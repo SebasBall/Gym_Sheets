@@ -10,6 +10,8 @@ ApplicationWindow {
 
     color: Colors.lightdark
 
+    Component.onCompleted: console.log(ThreadManager)
+
     Loader {
         id: screensLoader
         active: true

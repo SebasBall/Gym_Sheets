@@ -7,13 +7,21 @@ set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Qml)
+find_package(Qt6 REQUIRED COMPONENTS Quick Qml Sql)
 qt_standard_project_setup()
 
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 
-qt_add_executable(Gym_Sheets main.cpp)
+file(GLOB_RECURSE CPP_Files
+	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+	"CPP/*.cpp"
+	"CPP/*.h"
+	"CPP/*.c"
+)
+
+qt_add_executable(Gym_Sheets main.cpp ${CPP_Files})
+target_include_directories(Gym_Sheets PRIVATE CPP)
 
 set_source_files_properties(
 	GeneralQml/Colors.qml 
@@ -33,6 +41,9 @@ qt_add_qml_module(Gym_Sheets
     QML_FILES
 		Main.qml
 		${QML_Files}
+	SOURCES
+		CPP/thread_manager.cpp
+		CPP/thread_manager.h
 )
 
 qt_add_resources(Gym_Sheets "Fonts"
@@ -41,4 +52,4 @@ qt_add_resources(Gym_Sheets "Fonts"
     FILES Fonts/Lexend-VariableFont_wght.ttf
 )
 
-target_link_libraries(Gym_Sheets PRIVATE Qt6::Quick)
+target_link_libraries(Gym_Sheets PRIVATE Qt6::Quick Qt6::Sql)

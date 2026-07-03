@@ -1,0 +1,14 @@
+CREATE TABLE SeriesTypes (
+	Id INTEGER PRIMARY KEY AUTOINCREMENT,
+	Type TEXT NOT NULL
+);
+
+INSERT INTO SeriesTypes (Type)
+VALUES
+("FALLO"),
+("RIR 1"),
+("RIR 2"),
+("RPE 7"),
+("RPE 8"),
+("RPE 9"),
+("RONDAS");

@@ -72,10 +72,11 @@ Item {
 
     property RegularExpressionValidator p_activeValidator: noSpaceStart
 
-    signal focused()
+    signal focused
 
     // Height is based on implicit input height plus margins
     height: input.implicitHeight + (p_margins * 2)
+    implicitHeight: input.implicitHeight + (p_margins * 2)
 
     /** Loader for border rectangle (optional, controlled by p_borderSize) */
     Loader {
@@ -123,7 +124,6 @@ Item {
         font.italic: p_fontItalic
         font.underline: p_underline
 
-
         /** Loader for placeholder text (shown when empty, not focused
             and place holder enabled) */
         Loader {
@@ -162,7 +162,7 @@ Item {
         anchors.fill: parent
         anchors.margins: p_borderSize
         onClicked: {
-            input.forceActiveFocus()
+            input.forceActiveFocus();
             root.focused();
         }
     }
