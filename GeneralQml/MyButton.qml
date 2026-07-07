@@ -8,7 +8,7 @@ Item {
     /** Margin around the Text content */
     property real p_Margins: 16
     property real p_VMargins: p_Margins
-    property real p_HMargins:  p_Margins
+    property real p_HMargins: p_Margins
     /** Border thickness in pixels */
     property real p_borderSize: 0
     /** Corner radius for rounded borders/backgrounds */
@@ -59,28 +59,27 @@ Item {
     /** Horizontal alignment for text (left, right, center, justify) */
     property int p_horizontalAlign: Text.AlignLeft
 
-    signal clicked()
-    signal hovered()
-    signal pressed()
-    signal released()
-    signal exited()
+    signal clicked
+    signal hovered
+    signal pressed
+    signal released
+    signal exited
 
     // Height is based on implicit text height plus margins
     height: buttonText.implicitHeight + (p_VMargins * 2)
     width: buttonText.implicitWidth + (p_HMargins * 2)
 
-
-    Loader{
+    Loader {
         id: shadowLoader
         anchors.fill: parent
         active: p_shadowEnabled
-        sourceComponent: RectangularShadow{
+        sourceComponent: RectangularShadow {
             anchors.fill: parent
             radius: p_radius
             opacity: p_shadowOpacity
             color: p_shadowColor
             anchors.margins: 1
-            offset:  Qt.vector2d(1,1)
+            offset: Qt.vector2d(1, 1)
         }
     }
 
@@ -113,20 +112,19 @@ Item {
         id: gradientRectangleLoader
         anchors.fill: parent
         active: p_gradientButton
-        sourceComponent: Item{
+        sourceComponent: Item {
+            id: gradientRectangle
 
-            Loader{
+            Loader {
                 id: gradientRectangleBorderLoader
                 active: p_borderSize > 0
                 anchors.fill: parent
-                sourceComponent: Rectangle{
+                sourceComponent: Rectangle {
                     anchors.fill: parent
                     color: p_borderColor
                     radius: p_radius
                 }
             }
-
-            id: gradientRectangle
             anchors.fill: parent
 
             Shape {
@@ -139,15 +137,24 @@ Item {
                 ShapePath {
                     strokeWidth: 0
                     fillGradient: LinearGradient {
-                        x1: 0; y1: rectangleShape.height
-                        x2: rectangleShape.width; y2: 0
-                        GradientStop { position: 0; color: p_gradientBottomColor}
-                        GradientStop { position: 1; color: p_gradientTopColor}
+                        x1: 0
+                        y1: rectangleShape.height
+                        x2: rectangleShape.width
+                        y2: 0
+                        GradientStop {
+                            position: 0
+                            color: p_gradientBottomColor
+                        }
+                        GradientStop {
+                            position: 1
+                            color: p_gradientTopColor
+                        }
                     }
 
                     PathRectangle {
                         id: rectangleShapePath
-                        x: 0; y: 0
+                        x: 0
+                        y: 0
                         width: rectangleShape.width
                         height: rectangleShape.height
                         radius: p_radius - p_borderSize
@@ -189,10 +196,10 @@ Item {
         }
     }
 
-    transform: Scale{
+    transform: Scale {
         id: rootScale
-        origin.x: root.width/2
-        origin.y: root.height/2
+        origin.x: root.width / 2
+        origin.y: root.height / 2
         xScale: 1
         yScale: 1
     }
@@ -204,29 +211,28 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: {
-            root.focus = true
-            root.clicked()
+            root.focus = true;
+            root.clicked();
         }
         onPressed: {
-            rootScale.xScale = 0.95
-            rootScale.yScale = 0.95
-            root.pressed()
+            rootScale.xScale = 0.95;
+            rootScale.yScale = 0.95;
+            root.pressed();
         }
         onReleased: {
-            rootScale.xScale = 1
-            rootScale.yScale = 1
-            root.released()
+            rootScale.xScale = 1;
+            rootScale.yScale = 1;
+            root.released();
         }
         onEntered: {
-            rootScale.xScale = 0.95
-            rootScale.yScale = 0.95
-            root.hovered()
+            rootScale.xScale = 0.95;
+            rootScale.yScale = 0.95;
+            root.hovered();
         }
         onExited: {
-            rootScale.xScale = 1
-            rootScale.yScale = 1
-            root.exited()
+            rootScale.xScale = 1;
+            rootScale.yScale = 1;
+            root.exited();
         }
     }
-
 }

@@ -16,6 +16,10 @@ public:
   explicit ThreadManager(QObject *parent = nullptr);
   ~ThreadManager();
 
+  Q_INVOKABLE void startDay();
+  Q_INVOKABLE void getExerciseData();
+  Q_INVOKABLE void completeExercise(QVariantList records);
+
 private:
   // Methods
   void threadCountUpdate();
@@ -30,6 +34,8 @@ private slots:
   void startDbConnection(int workerId);
 
 signals:
+  void startedDay();
+  void gotExerciseData(Exercise exercise, QList<Record> records);
 };
 
 #endif // THREAD_MANAGER_H

@@ -23,9 +23,13 @@ file(GLOB_RECURSE CPP_Files
 qt_add_executable(Gym_Sheets main.cpp ${CPP_Files})
 target_include_directories(Gym_Sheets PRIVATE CPP)
 
+file(GLOB_RECURSE QML_Singletons
+	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+	"GeneralQml/Singletons/*.qml"
+)
+
 set_source_files_properties(
-	GeneralQml/Colors.qml 
-	GeneralQml/Fonts.qml
+	${QML_Singletons}
 	PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 )
 
@@ -42,8 +46,18 @@ qt_add_qml_module(Gym_Sheets
 		Main.qml
 		${QML_Files}
 	SOURCES
-		CPP/thread_manager.cpp
-		CPP/thread_manager.h
+		${CPP_Files}
+)
+
+file(GLOB_RECURSE SQL_Files
+	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+	"SQL/*.sql"
+)
+
+qt_add_resources(Gym_Sheets "SQL"
+	PREFIX "SQL"
+	BASE "SQL"
+	FILES ${SQL_Files}
 )
 
 qt_add_resources(Gym_Sheets "Fonts"

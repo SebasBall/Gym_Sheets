@@ -151,7 +151,7 @@ Item {
             font.bold: root.p_fontBold
             font.italic: root.p_fontItalic
             font.underline: root.p_underline
-            wrapMode: Text.WrapAnywhere
+            wrapMode: Text.Wrap
 
             Loader {
                 id: textBorderLoader

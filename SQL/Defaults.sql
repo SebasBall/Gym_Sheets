@@ -1,0 +1,260 @@
+INSERT INTO Exercises (Name, Day, "Order", Video, Guide, Notes)
+VALUES
+-- Day 1
+('Press Inclinado con Mancuernas', 1, 1, 'https://youtu.be/J_x6MEFk3DM', '[6 - 8]', 'Asiento nivel 6'),
+('Apertura de Pectoral en Máquina', 1, 2, 'https://youtu.be/a9vQ_hwIksU', '[12 - 16] [12 - 16] [10 - 14]', 'Asiento lo mas alto posible\nLas placas pesan 15kg en teoría, pero la primera pesa 10kg'),
+('Empuje Frontal en Máquina', 1, 3, 'https://youtu.be/AsK9KDc-vG8', '[8 - 12]', 'Asiento nivel 2'),
+('Press de Hombro en Máquina', 1, 4, 'https://youtu.be/WvLMauqrnK8', '[10 - 12] [8 - 10] [6 - 10]', 'Asiento abajo del 5\nLas primeras 5 placas son de 10kg y el resto de 15 kg'),
+('Extensiones Katana', 1, 5, 'https://youtu.be/bJ9bm-aJ7No', '[10 - 12]', NULL),
+-- Day 2
+('Remo Horizontal Sentado', 2, 1, 'https://youtu.be/w2Kkk0uR2EU', '[8 - 10] [8 - 10] [6 - 8]', '5 Grados el asiento, 7 medio altura'),
+('Jalones al Pecho (Agarre Neutro)', 2, 2, 'https://youtu.be/InXmIKVNwCU', '[10 - 12]', NULL),
+('Remo Máquina Diagonal Unilateral', 2, 3, 'https://youtu.be/1u0pcZP0OZY', '[8 - 10]', NULL),
+('Drag Curl de Bíceps con Barra', 2, 4, 'https://youtu.be/4jwx6O1q4Dg', '[8 - 12]', NULL),
+('Curl de Bíceps Sentado con Mancuernas', 2, 5, 'https://youtu.be/DTdrS09a9NA', '[6 - 10]', 'Asiento nivel 5'),
+('Elevaciones Laterales en Máquina', 2, 6, 'https://youtu.be/f_OGBg2KxgY', '[6 - 10]', NULL),
+-- Day 3
+('Sentadilla Hack', 3, 1, 'https://youtu.be/k9JAabIHdEo', '[8 - 12]', NULL),
+('Extensión de Cuadriceps en Máquina', 3, 2, 'https://youtu.be/oQM875T39M4', '[12 - 15]', 'Maquina Life Fitness\nAsiento distancia 7\nPendulo largo M'),
+('Prensa Horizontal', 3, 3, 'https://youtu.be/PBnh2I0nxmc', '[10 - 14]', 'Asiento lo mas bajo posible'),
+('Abductores en Máquina', 3, 4, 'https://youtu.be/_nwuScrS-kg', '[8 - 12]', 'Maquina Hammer Strength'),
+('Extensión de Tobillo con Banda', 3, 5, 'https://youtu.be/Re7XMKgAti8', '[12 - 16]', NULL),
+('Eversion e Inversion de Tobillo con Banda', 3, 6, 'https://youtu.be/fw_U2B7sfHA', '[12 - 16]', NULL),
+('Dorsiflexión', 3, 7, 'https://youtu.be/5YUh4lOQ2pI', '[12 - 16]', NULL),
+('Estocada de Tobillo con Banda', 3, 8, 'https://youtu.be/n6rjn2Fx5tg', '[8 - 12]', NULL),
+('Estabilidad con KB', 3, 9, 'https://youtu.be/XemHd4qzqKk', '40 seg', NULL),
+-- Day 4
+('Pull Ups', 4, 1, 'https://youtu.be/eDP_OOhMTZ4', '[16]', NULL),
+('Fondos en Paralelas', 4, 2, 'https://youtu.be/NnJEg52IGjI', '[16]', NULL),
+('Yoga Push Ups', 4, 3, 'https://youtu.be/qsUZh0rlubM', '[8 - 16]', NULL),
+('Wood Choops Máquinas', 4, 4, 'https://youtu.be/90Qh5XG6mqs', '[10 - 14]', NULL),
+('Plancha Dinamica KB', 4, 5, 'https://youtu.be/odo0h50hfwY', '40 seg | 3 Rondas', NULL),
+('Plancha Lateral en Banco', 4, 6, 'https://youtu.be/aDsaGBnvDQo', '30 Seg | 3 Rondas', NULL),
+-- Day 5
+('Peso Muerto', 5, 1, 'https://youtu.be/7BdVi5qJ7E4', '[6 - 8]', NULL),
+('Curl de Isquios en Máquina', 5, 2, 'https://youtu.be/6IvQvWZmEsw', '[12 - 15]', 'Maquina Hammer strength'),
+('Lunge en Smith', 5, 3, 'https://youtu.be/ngxMg0nuPyY', '[6 - 8]', NULL),
+('Puente Glúteo en Máquina', 5, 4, 'https://youtu.be/zzFpqhVxxj8', '[6 - 8]', NULL),
+('Elevación de Pantorrilla en Smith', 5, 5, 'https://youtu.be/wlqTemUXPXY', '[10 - 14]', NULL);
+
+INSERT INTO Series(ExerciseId, "Order", SeriesType)
+VALUES
+-- Day 1
+(1,1,3),(1,2,2),(1,3,1),
+(2,1,3),(2,2,2),(2,3,1),
+(3,1,2),(3,2,1),
+(4,1,3),(4,2,2),(4,3,1),
+(5,1,2),(5,2,2),(5,3,1),
+-- Day 2
+(6,1,3),(6,2,2),(6,3,1),
+(7,1,2),(7,2,1),
+(8,1,2),(8,2,1),
+(9,1,2),(9,2,1),
+(10,1,1),
+(11,1,3),(11,2,2),(11,3,1),
+-- Day 3
+(12,1,4),(12,2,5),(12,3,6),
+(13,1,3),(13,2,2),(13,3,1),
+(14,1,3),(14,2,2),(14,3,1),
+(15,1,1),(15,2,1),(15,3,1),
+(16,1,3),(16,2,1),
+(17,1,3),(17,2,1),
+(18,1,3),(18,2,1),
+(19,1,3),(19,2,1),
+(20,1,7),
+-- Day 4
+(21,1,3),(21,2,2),(21,3,1),
+(22,1,3),(22,2,2),(22,3,1),
+(23,1,3),(23,2,2),(23,3,1),
+(24,1,4),(24,2,5),(24,3,1),
+(25,1,7),
+(26,1,7),
+-- Day 5
+(27,1,4),(27,2,5),(27,3,6),
+(28,1,3),(28,2,2),(28,3,1),
+(29,1,5),(29,2,6),
+(30,1,5),(30,2,6),
+(31,1,2),(31,2,2),(31,3,2),(31,4,1);
+
+INSERT INTO Records (ExerciseId, "Order", Resistance, Reps, Training, Notes) VALUES
+-- ExerciseId 1: Press Inclinado con Mancuernas
+(1,1,'20kg','7',1,NULL), (1,2,'20kg','8',1,NULL), (1,3,'22.5kg','8 RP x (1 parcial)',1,NULL),
+(1,1,'22.5kg','6',2,NULL), (1,2,'22.5kg','7',2,NULL), (1,3,'25kg','4',2,NULL),
+(1,1,'22.5kg','7',3,NULL), (1,2,'22.5kg','7 (1 parcial)',3,NULL), (1,3,'20kg','7 RP x 4 RP x 3',3,'No se porque pero hoy no pude con 25 Kg y las de 22.5 estaban cogidas entonces me tocó con las de 20kg'),
+(1,1,'20kg','8',4,NULL), (1,2,'22.5kg','6',4,NULL), (1,3,'22.5kg','8',4,NULL),
+(1,1,'22.5kg','6',5,NULL), (1,2,'22.5kg','7',5,NULL), (1,3,'25kg','4',5,'No pude hacer RP, cuando me intenté volver a poner las mancuernas no pude mantenerlas'),
+-- ExerciseId 2: Apertura de Pectoral en Máquina
+(2,1,'6 placas','10',1,NULL), (2,2,'6 placas','11',1,NULL), (2,3,'6 placas','12 (3 parciales) RP x 3 (2 parciales) RP x 2 (3 parciales)',1,NULL),
+(2,1,'5 placas','14',2,NULL), (2,2,'5 placas','15',2,NULL), (2,3,'6 placas','7 (1 parcial) RP x 3 RP x 2',2,NULL),
+(2,1,'5 placas','14',3,NULL), (2,2,'5 placas','15',3,NULL), (2,3,'6 placas','9 RP x 4',3,NULL),
+(2,1,'5 placas','14',4,NULL), (2,2,'5 placas','15',4,NULL), (2,3,'6 placas','12',4,NULL),
+(2,1,'5 placas','14',5,NULL), (2,2,'5 placas','16',5,NULL), (2,3,'6 placas','13 RP x 5',5,NULL),
+-- ExerciseId 3: Empuje Frontal en Máquina
+(3,1,'5 placas','11',1,NULL), (3,2,'6 placas','9 (3 parciales) RP x 1 (2 parciales)',1,NULL),
+(3,1,'6 placas','8',2,NULL), (3,2,'6 placas','11 (1 parcial) RP x 3',2,NULL),
+(3,1,'6 placas','10',3,NULL), (3,2,'6 placas','12 (1 parcial)',3,NULL),
+(3,1,'6 placas','11',4,NULL), (3,2,'6 + 1/2 placas','11 RP x 3 (1 parcial)',4,NULL),
+(3,1,'6 + 1/2 placas','10',5,NULL), (3,2,'6 + 1/2 placas','13',5,NULL),
+-- ExerciseId 4: Press de Hombro en Máquina
+(4,1,'4 placas','12',1,NULL), (4,2,'4 placas','10',1,NULL), (4,3,'5 placas','8 (1 parcial) RP x 2 (1 parcial)',1,NULL),
+(4,1,'4 placas','12',2,NULL), (4,2,'4 placas','10',2,NULL), (4,3,'5 placas','9 (1 asistida)',2,NULL),
+(4,1,'4 placas','12',3,NULL), (4,2,'5 placas','8',3,NULL), (4,3,'5 placas','9 (1 parcial) RP x 3 (1 parcial)',3,NULL),
+(4,1,'4 placas','12',4,NULL), (4,2,'5 placas','8',4,NULL), (4,3,'5 placas','10 (1 parcial)',4,NULL),
+(4,1,'4 placas','12',5,NULL), (4,2,'5 placas','9',5,NULL), (4,3,'6 placas','5 RP x 3',5,NULL),
+-- ExerciseId 5: Extensiones Katana
+(5,1,'1 placa','9',1,NULL), (5,2,'1 placa','9',1,NULL), (5,3,'1 placa','8',1,NULL),
+(5,1,'1 placa','6',2,NULL), (5,2,'1 placa','7',2,NULL), (5,3,'1 placa','10',2,NULL),
+(5,1,'1 placa','8',3,NULL), (5,2,'1 placa','9',3,NULL), (5,3,'1 placa','11 RP x 4',3,NULL),
+(5,1,'1 placa','8',4,NULL), (5,2,'1 placa','9',4,NULL), (5,3,'1 placa','11 RP x 4',4,NULL),
+(5,1,'1 placa','9',5,NULL), (5,2,'1 placa','10',5,NULL), (5,3,'1 placa','12',5,NULL),
+-- ExerciseId 6: Remo Horizontal Sentado
+(6,1,'5 placas','9',1,NULL), (6,2,'5 placas','10',1,NULL), (6,3,'6 placas','16 (4 parciales) (5 escápula)',1,NULL),
+(6,1,'7 placas','10',2,NULL), (6,2,'8 placas','8',2,NULL), (6,3,'8 placas','8 (4 scapula)',2,'Creo que la técnica fue muy mala llegue a usar espalda baja diría yo'),
+(6,1,'7 placas','9',3,NULL), (6,2,'7 placas','10',3,NULL), (6,3,'8 placas','7 (5 escápula)',3,NULL),
+(6,1,'7 placas','9',4,NULL), (6,2,'7 placas','10',4,NULL), (6,3,'8 placas','9 (1 parcial) (6 escápula)',4,NULL),
+(6,1,'8 placas','7',5,NULL), (6,2,'8 placas','8',5,NULL), (6,3,'8 placas','10 (7 escápula)',5,NULL),
+-- ExerciseId 7: Jalones al Pecho (Agarre Neutro)
+(7,1,'7 placas','12',1,NULL), (7,2,'8 placas','10 (2 parciales) RP x 2 (4 parciales)',1,NULL),
+(7,1,'7 placas','12',2,NULL), (7,2,'8 placas','11 (1 parcial) RP x 1',2,NULL),
+(7,1,'8 placas','10',3,NULL), (7,2,'8 placas','12 (1 parcial)',3,NULL),
+(7,1,'8 placas','11',4,NULL), (7,2,'9 placas','8 (2 parciales) RP x 4 (3 parciales)',4,NULL),
+(7,1,'8 placas','12',5,NULL), (7,2,'9 placas','8 RP x 5 (3 parciales)',5,NULL),
+-- ExerciseId 8: Remo Máquina Diagonal Unilateral
+(8,1,'5 placas','10',1,NULL), (8,2,'6 placas','10 (3 parciales)',1,NULL),
+(8,1,'6 placas','9',2,NULL), (8,2,'7 placas','10 (1 parcial)',2,NULL),
+(8,1,'7 placas','9',3,NULL), (8,2,'7 placas + 1/2','8 RP x 3 (1 parcial)',3,NULL),
+(8,1,'7 placas','10',4,NULL), (8,2,'7 placas + 1/2','9 RP x 2 (1 parcial)',4,NULL),
+(8,1,'7 placas + 1/2','8',5,NULL), (8,2,'7 placas + 1/2','9 RP x 2)',5,NULL),
+-- ExerciseId 9: Drag Curl de Bíceps con Barra
+(9,1,'17.5kg','8',1,NULL), (9,2,'17.5kg','12 (2 parciales)',1,NULL),
+(9,1,'17.5kg','11',2,NULL), (9,2,'20kg','9 (1 parcial) RP x 3 (1 parcial)',2,NULL),
+(9,1,'20kg','8',3,NULL), (9,2,'20kg','11 (1 parcial) RP x 4',3,NULL),
+(9,1,'20kg','10',4,NULL), (9,2,'20kg','12 (1 parcial)',4,NULL),
+(9,1,'20kg','10',5,NULL), (9,2,'20kg','12 (1 parcial)',5,NULL),
+-- ExerciseId 10: Curl de Bíceps Sentado con Mancuernas
+(10,1,'12.5kg','7 (2 parciales) RP x 3 (1 parcial)',1,NULL),
+(10,1,'12.5kg','8 RP x 5',2,NULL),
+(10,1,'12.5kg','10',3,NULL),
+(10,1,'15kg','6 RP x 4',4,NULL),
+(10,1,'15kg','6 RP x 4',5,NULL),
+-- ExerciseId 11: Elevaciones Laterales en Máquina
+(11,1,'2 placas','9',1,NULL), (11,2,'2 placas','10',1,NULL), (11,3,'3 placas','7 (3 parciales) RP x 1 (3 parciales) RP x 2 (2 parciales)',1,NULL),
+(11,1,'2 placas','10',2,NULL), (11,2,'3 placas','6',2,NULL), (11,3,'3 placas','8 (1 parcial) RP x 3 (1 parcial)',2,NULL),
+(11,1,'3 placas','6',3,NULL), (11,2,'3 placas','7',3,NULL), (11,3,'3 placas','11 (2 parciales)',3,NULL),
+(11,1,'3 placas','9',4,NULL), (11,2,'3 placas','10',4,NULL), (11,3,'4 placas','6 (1 parcial) RP x 2 (1 parcial)',4,NULL),
+(11,1,'3 placas','9',5,NULL), (11,2,'3 placas','10',5,NULL), (11,3,'4 placas','6 (1 parcial) RP x 2 (1 parcial)',5,NULL),
+-- ExerciseId 12: Sentadilla Hack
+(12,1,'40kg','6',1,'RPE 7 me olvidé de revisar que eran de 10 a 12 myb'), (12,2,'40kg','8',1,NULL), (12,3,'50kg','11 RP x 2',1,NULL),
+(12,1,'40kg','11',2,NULL), (12,2,'50kg','9',2,NULL), (12,3,'50kg','14',2,NULL),
+(12,1,'50kg','8',3,NULL), (12,2,'50kg','10',3,NULL), (12,3,'60kg','9 RP x 4',3,NULL),
+(12,1,'50kg','9',4,NULL), (12,2,'50kg','11',4,NULL), (12,3,'60kg','11 RP x 3',4,NULL),
+(12,1,'50kg','11',5,NULL), (12,2,'60kg','9',5,NULL), (12,3,'60kg','11 RP x 3',5,'El entrenador me dio el tip de cerrar un poco mas la punta de los pies, ya que estaban muy abiertos, esto para enfocar mas el cuadricep exterior'),
+-- ExerciseId 13: Extensión de Cuadriceps en Máquina
+(13,1,'4 placas','14',1,NULL), (13,2,'4 placas','15',1,NULL), (13,3,'5 placas','12 (3 parciales) RP x 4 (1 parcial)',1,NULL),
+(13,1,'4 placas','14',2,NULL), (13,2,'4 placas','15',2,NULL), (13,3,'5 placas','14 (1 parcial) RP x 4 (2 parciales)',2,NULL),
+(13,1,'5 placas','12',3,NULL), (13,2,'5 placas','13',3,NULL), (13,3,'5 placas','17 (3 parciales)',3,NULL),
+(13,1,'5 placas','14',4,NULL), (13,2,'5 placas','15',4,NULL), (13,3,'6 placas','9 (2 parciales) RP x 6 (1 parcial)',4,NULL),
+(13,1,'5 placas','14',5,NULL), (13,2,'5 placas','15',5,NULL), (13,3,'6 placas','10 (2 parciales) RP x 3 (1 parcial) RP x 3 (1 parcial)',5,NULL),
+-- ExerciseId 14: Prensa Horizontal
+(14,1,'5 placas','10',1,NULL), (14,2,'5 placas','14',1,NULL), (14,3,'6 placas','14 (1 parcial)',1,NULL),
+(14,1,'6 placas','12',2,NULL), (14,2,'6 placas','13',2,NULL), (14,3,'7 placas','11 (1 parcial) RP x 3',2,NULL),
+(14,1,'6 placas','14',3,NULL), (14,2,'7 placas','10',3,NULL), (14,3,'7 placas','15',3,NULL),
+(14,1,'7 placas','13',4,NULL), (14,2,'7 placas','14',4,NULL), (14,3,'8 placas','11 RP x 4',4,NULL),
+(14,1,'7 placas','14',5,NULL), (14,2,'8 placas','10',5,NULL), (14,3,'8 placas','15',5,NULL),
+-- ExerciseId 15: Abductores en Máquina
+(15,1,'12 placas','9',1,NULL), (15,2,'12 placas','8 (3 parciales)',1,NULL), (15,3,'12 placas','6 (2 parciales) RP x 2 (2 parciales) RP x 2 (1 parcial)',1,NULL),
+(15,1,'12 placas','10 (2 parciales)',2,NULL), (15,2,'12 placas','8 (2 parciales)',2,NULL), (15,3,'12 placas','8 (1 parcial)',2,NULL),
+(15,1,'12 placas','12 (1 parcial)',3,NULL), (15,2,'12 placas','9 (1 parcial)',3,NULL), (15,3,'12 placas','7 (2 parciales)',3,NULL),
+(15,1,'13 placas','9 (2 parciales)',4,NULL), (15,2,'13 placas','7 (2 parciales)',4,NULL),
+(15,1,'13 placas','10 (2 parciales)',5,NULL), (15,2,'13 placas','7 (1 parcial)',5,NULL), (15,3,'13 placas','6',5,NULL),
+-- ExerciseId 16: Extensión de Tobillo con Banda
+(16,1,'Amarilla','16',1,NULL), (16,2,'Amarilla','16',1,NULL),
+(16,1,'Amarilla','16',2,NULL), (16,2,'Amarilla','16',2,NULL),
+(16,1,'Amarilla','16',3,NULL), (16,2,'Amarilla','16',3,NULL),
+(16,1,'Amarilla','16',4,NULL), (16,2,'Amarilla','16',4,NULL),
+(16,1,'Amarilla','16',5,NULL), (16,2,'Amarilla','16',5,NULL),
+-- ExerciseId 17: Eversion e Inversion de Tobillo con Banda
+(17,1,'Amarilla','16',1,NULL), (17,2,'Amarilla','16',1,NULL),
+(17,1,'Amarilla','16',2,NULL), (17,2,'Amarilla','16',2,NULL),
+(17,1,'Amarilla','16',3,NULL), (17,2,'Amarilla','16',3,NULL),
+(17,1,'Amarilla','16',4,NULL), (17,2,'Amarilla','16',4,NULL),
+(17,1,'Amarilla','16',5,NULL), (17,2,'Amarilla','16',5,NULL),
+-- ExerciseId 18: Dorsiflexión
+(18,1,'Amarilla','16',1,NULL), (18,2,'Amarilla','16',1,NULL),
+(18,1,'Amarilla','16',2,NULL), (18,2,'Amarilla','16',2,NULL),
+(18,1,'Amarilla','16',3,NULL), (18,2,'Amarilla','16',3,NULL),
+(18,1,'Amarilla','16',4,NULL), (18,2,'Amarilla','16',4,NULL),
+(18,1,'Amarilla','16',5,NULL), (18,2,'Amarilla','16',5,NULL),
+-- ExerciseId 19: Estocada de Tobillo con Banda
+(19,1,'Amarilla','9',1,NULL), (19,2,'Amarilla','10',1,NULL),
+(19,1,'Amarilla','9',2,NULL), (19,2,'Amarilla','12',2,NULL),
+(19,1,'Amarilla','11',3,NULL), (19,2,'Amarilla','12',3,NULL),
+(19,1,'Amarilla','11',4,NULL), (19,2,'Amarilla','12',4,NULL),
+(19,1,'Amarilla','11',5,NULL), (19,2,'Amarilla','12',5,NULL),
+-- ExerciseId 20: Estabilidad con KB
+(20,1,'Completado','Completado',1,NULL),
+(20,1,'Completado','Completado',2,NULL),
+(20,1,'Completado','Completado',3,NULL),
+(20,1,'Completado','Completado',4,NULL),
+(20,1,'Completado','Completado',5,NULL),
+-- ExerciseId 21: Pull Ups
+(21,1,'0','6',1,NULL), (21,2,'0','7',1,NULL), (21,3,'0','6 RP x 3 RP x 3',1,NULL),
+(21,1,'0','6',2,NULL), (21,2,'0','7',2,NULL), (21,3,'0','7 RP x 3 RP x 3',2,NULL),
+(21,1,'0','6',3,NULL), (21,2,'0','7',3,NULL), (21,3,'0','8 RP x 3 RP x 3',3,NULL),
+(21,1,'0','6',4,NULL), (21,2,'0','7',4,NULL), (21,3,'0','8 RP x 3 RP x 3',4,NULL),
+(21,1,'0','7',5,NULL), (21,2,'0','8',5,NULL), (21,3,'0','9 RP x 4 RP x 3',5,NULL),
+-- ExerciseId 22: Fondos en Paralelas
+(22,1,'0','5',1,NULL), (22,2,'0','6',1,NULL), (22,3,'0','5 RP x 1 RP x 1',1,NULL),
+(22,1,'0','5',2,NULL), (22,2,'0','6',2,NULL), (22,3,'0','6 RP x 1 RP x 1',2,NULL),
+(22,1,'0','5',3,NULL), (22,2,'0','6',3,NULL), (22,3,'0','7 RP x 1 RP x 1',3,NULL),
+(22,1,'0','5',4,NULL), (22,2,'0','6',4,NULL), (22,3,'0','7 RP x 1 RP x 1',4,NULL),
+(22,1,'0','6',5,NULL), (22,2,'0','7',5,NULL), (22,3,'0','8 RP x 1 RP x 1',5,NULL),
+-- ExerciseId 23: Yoga Push Ups
+(23,1,'0','8',1,NULL), (23,2,'0','9',1,NULL), (23,3,'0','9 RP x 1',1,NULL),
+(23,1,'0','8',2,NULL), (23,2,'0','9',2,NULL), (23,3,'0','10 RP x 1',2,NULL),
+(23,1,'0','8',3,NULL), (23,2,'0','9',3,NULL), (23,3,'0','10 RP x 2',3,NULL),
+(23,1,'0','8',4,NULL), (23,2,'0','9',4,NULL), (23,3,'0','11 RP x 1',4,NULL),
+(23,1,'0','10',5,NULL), (23,2,'0','11',5,NULL), (23,3,'0','12',5,NULL),
+-- ExerciseId 24: Wood Choops Máquinas
+(24,1,'4 placas','12',1,NULL), (24,2,'4 placas','14',1,NULL), (24,3,'4 placas','16',1,NULL),
+(24,1,'4 placas','14',2,NULL), (24,2,'5 placas','12',2,NULL), (24,3,'5 placas','12',2,NULL),
+(24,1,'4 placas','16',3,NULL), (24,2,'5 placas','12',3,NULL), (24,3,'5 placas','12',3,NULL),
+(24,1,'5 placas','12',4,NULL), (24,2,'5 placas','14',4,NULL), (24,3,'5 placas','16',4,NULL),
+(24,1,'5 placas','12',5,NULL), (24,2,'5 placas','14',5,NULL), (24,3,'6 placas','12',5,NULL),
+-- ExerciseId 25: Plancha Dinamica KB
+(25,1,'Completado','Completado',1,NULL),
+(25,1,'Completado','Completado',2,NULL),
+(25,1,'Completado','Completado',3,NULL),
+(25,1,'Completado','Completado',4,NULL),
+(25,1,'Completado','Completado',5,NULL),
+-- ExerciseId 26: Plancha Lateral en Banco
+(26,1,'Completado','Completado',1,NULL),
+(26,1,'Completado','Completado',2,NULL),
+(26,1,'Completado','Completado',3,NULL),
+(26,1,'Completado','Completado',4,NULL),
+(26,1,'Completado','Completado',5,NULL),
+-- ExerciseId 27: Peso Muerto
+(27,1,'60kg','6',1,NULL), (27,2,'60kg','8',1,NULL), (27,3,'70kg','5 RP x 1 RP x 2',1,NULL),
+(27,1,'60kg','6',2,NULL), (27,2,'60kg','8',2,NULL), (27,3,'70kg','8 RP x 1',2,NULL),
+(27,1,'60kg','8',3,NULL), (27,2,'70kg','6',3,NULL), (27,3,'75kg','8',3,NULL),
+(27,1,'70kg','8',4,NULL), (27,2,'75kg','6',4,NULL), (27,3,'80kg','7 RP x 3',4,NULL),
+-- ExerciseId 28: Curl de Isquios en Máquina
+(28,1,'7 placas','14',1,NULL), (28,2,'7 placas','16',1,NULL), (28,3,'8 placas','12 RP x 3',1,NULL),
+(28,1,'7 placas','14',2,NULL), (28,2,'7 placas','15',2,NULL), (28,3,'8 placas','14 RP x 5',2,NULL),
+(28,1,'8 placas','12',3,NULL), (28,2,'8 placas','13',3,NULL), (28,3,'8 placas','16',3,NULL),
+(28,1,'8 placas','14',4,NULL), (28,2,'8 placas','15',4,NULL), (28,3,'9 placas','12 RP x 3',4,NULL),
+-- ExerciseId 29: Lunge en Smith
+(29,1,'20kg','8',1,NULL), (29,2,'30kg','5 RP x 2 RP x 1',1,NULL),
+(29,1,'20kg','8',2,NULL), (29,2,'30kg','8 RP x 3',2,NULL),
+(29,1,'30kg','6',3,NULL), (29,2,'40kg','7',3,NULL),
+(29,1,'40kg','8',4,NULL), (29,2,'45kg','6',4,'Mala técnica tengo que practicar mas'),
+-- ExerciseId 30: Puente Glúteo en Máquina
+(30,1,'0kg','6',1,NULL), (30,2,'0kg','8',1,NULL),
+(30,1,'0kg','6',2,NULL), (30,2,'10kg','10',2,'Recordar empujar con los talones la próxima'),
+(30,1,'10kg','8',3,NULL), (30,2,'15kg','7 RP x 3',3,NULL),
+(30,1,'10kg','7',4,NULL), (30,2,'15kg','9',4,NULL),
+-- ExerciseId 31: Elevación de Pantorrilla en Smith
+(31,1,'60kg','14',1,NULL), (31,2,'60kg','14',1,NULL), (31,3,'70kg','13',1,NULL), (31,4,'70kg','14',1,NULL),
+(31,1,'70kg','13',2,NULL), (31,2,'70kg','13',2,NULL), (31,3,'70kg','13',2,NULL), (31,4,'70kg','13',2,NULL),
+(31,1,'70kg','13',3,NULL), (31,2,'70kg','13',3,NULL), (31,3,'80kg','9',3,NULL), (31,4,'80kg','12',3,NULL),
+(31,1,'80kg','11',4,NULL), (31,2,'80kg','11',4,NULL), (31,3,'80kg','11',4,NULL), (31,4,'80kg','13 RP x 3',4,NULL);

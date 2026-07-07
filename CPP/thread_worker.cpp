@@ -1,5 +1,9 @@
 #include "thread_worker.h"
+#include <qfiledevice.h>
 #include <qhashfunctions.h>
+#include <qlist.h>
+#include <qlogging.h>
+#include <qsqldatabase.h>
 #include <qstandardpaths.h>
 
 ThreadWorker::ThreadWorker(int id, QObject *parent) : QObject{parent} {
@@ -43,6 +47,154 @@ void ThreadWorker::startDbConnection() {
     }
   }
   emit completedDbConnection(m_id);
+
+  emit completeTask();
+}
+
+QString ThreadWorker::callQuery(QString filePath, QString queryTitle) {
+  QFile sqlFile(filePath);
+  queryTitle.append("\n");
+  if (!sqlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    qWarning() << "Unable to open file" << filePath << "to read the queries";
+    return "";
+  };
+
+  QString fileContents = sqlFile.readAll();
+  QStringList textBlocks = fileContents.split(";");
+  for (QString block : textBlocks) {
+    if (block.contains(queryTitle)) {
+      qInfo() << "Successfully found the query" << queryTitle << "on the file"
+              << filePath;
+      qDebug() << block;
+      return block;
+    }
+  }
+
+  qWarning() << "Unable to find the query" << queryTitle << "on the file"
+             << filePath;
+  return "";
+};
+
+void ThreadWorker::startDay() {
+  emit addTask();
+
+  QSqlDatabase db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  QString rawQuery;
+
+  rawQuery = callQuery(":SQL/User.sql", "startDay");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    qInfo() << "Successfully completed start day";
+  } else {
+    qWarning() << "The query didn't set any value";
+  }
+
+  emit startedDay();
+  emit completeTask();
+}
+
+void ThreadWorker::getExerciseData() {
+  emit addTask();
+
+  QSqlDatabase db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  QString rawQuery;
+  Exercise exercise;
+  QList<Record> records;
+
+  rawQuery = callQuery(":SQL/Exercises.sql", "getExercise");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    while (query.next()) {
+      exercise.id = query.value(0).toInt();
+      exercise.name = query.value(1).toString();
+      exercise.video = query.value(2).toString();
+      exercise.guide = query.value(3).toString();
+      exercise.notes = query.value(4).toString();
+    }
+  } else {
+    qWarning() << "The query didn't select any value:"
+               << query.lastError().text();
+  }
+
+  query.clear();
+  rawQuery = callQuery(":SQL/Records.sql", "getRecords");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  query.bindValue(":exerciseId", exercise.id);
+  if (query.exec()) {
+    while (query.next()) {
+      Record record;
+      record.resistance = query.value(0).toString();
+      record.reps = query.value(1).toString();
+      record.type = query.value(2).toString();
+      record.notes = query.value(3).toString();
+      record.training = query.value(4).toInt();
+      records.append(record);
+    }
+  } else {
+    qWarning() << "The query didn't select any value:"
+               << query.lastError().text();
+  }
+
+  emit gotExerciseData(exercise, records);
+
+  emit completeTask();
+}
+
+void ThreadWorker::completeExercise(QList<Record> records) {
+  emit addTask();
+
+  QSqlDatabase db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  QString rawQuery;
+
+  rawQuery = callQuery(":SQL/Records.sql", "setRecord");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  for (int i = 0; i < records.length(); i++) {
+    query.prepare(rawQuery);
+    query.bindValue(":ord", i + 1);
+    query.bindValue(":resistance", records[i].resistance);
+    query.bindValue(":reps", records[i].reps);
+    query.bindValue(":training", records[i].training);
+
+    if (records[i].notes.isEmpty()) {
+      query.bindValue(":notes", QVariant());
+    } else {
+      query.bindValue(":notes", records[i].notes);
+    }
+
+    if (query.exec()) {
+      qInfo() << "Successfully added a new record";
+    } else {
+      qWarning() << "Error inserting a new record:" << query.lastError().text();
+    }
+
+    query.clear();
+  }
+
+  // NEXT STEP DOING QUERY TO UPDATE THE VALUE ON USER TABLE OF THE
+  // CURRENT EXERCISE AND CHECK IF IT WAS THE LAST ONE TO SEND A SIGNAL
+  // TO COMPLETE THE TRAINING
 
   emit completeTask();
 }

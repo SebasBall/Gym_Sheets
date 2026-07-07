@@ -1,6 +1,8 @@
 #include "thread_manager.h"
 #include "CPP/thread_worker.h"
+#include <qeventloop.h>
 #include <qlogging.h>
+#include <qobjectdefs.h>
 
 ThreadManager::ThreadManager(QObject *parent) : QObject{parent} {
   qInfo() << "Created the ThreadManager";
@@ -22,6 +24,10 @@ ThreadManager::ThreadManager(QObject *parent) : QObject{parent} {
 
     connect(newWorker, &ThreadWorker::completedDbConnection, this,
             &ThreadManager::startDbConnection);
+    connect(newWorker, &ThreadWorker::gotExerciseData, this,
+            &ThreadManager::gotExerciseData);
+    connect(newWorker, &ThreadWorker::startedDay, this,
+            &ThreadManager::startedDay);
   }
 
   startDbConnection(-1);
@@ -68,4 +74,36 @@ void ThreadManager::startDbConnection(int workerId) {
                  &ThreadManager::startDbConnection);
     }
   }
+}
+
+void ThreadManager::startDay() {
+  qDebug() << "Started start day";
+  threadCountUpdate();
+  QMetaObject::invokeMethod(m_workersList[m_threadCounter], "startDay");
+}
+
+void ThreadManager::getExerciseData() {
+  qDebug() << "Started getting the exercise data";
+  threadCountUpdate();
+  QMetaObject::invokeMethod(m_workersList[m_threadCounter], "getExerciseData");
+}
+
+void ThreadManager::completeExercise(QVariantList records) {
+  qDebug() << "Started setting records";
+  threadCountUpdate();
+  qDebug() << records;
+  QList<Record> recordsList;
+
+  for (const QVariant &row : records) {
+    QVariantList r = row.toList();
+    Record record;
+    record.resistance = r[0].toString();
+    record.reps = r[1].toString();
+    record.notes = r[2].toString();
+    record.training = r[3].toInt();
+    recordsList.append(record);
+  }
+
+  QMetaObject::invokeMethod(m_workersList[m_threadCounter], "completeExercise",
+                            Q_ARG(QList<Record>, recordsList));
 }

@@ -10,13 +10,12 @@ ApplicationWindow {
 
     color: Colors.lightdark
 
-    Component.onCompleted: console.log(ThreadManager)
-
     Loader {
-        id: screensLoader
+        id: screenLoader
         active: true
         anchors.fill: parent
         focus: true
         source: "ScreensQml/Exercise_Screen.qml"
+        Component.onCompleted: ScreenManager.setLoader(screenLoader)
     }
 }
