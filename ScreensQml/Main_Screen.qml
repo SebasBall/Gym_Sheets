@@ -6,11 +6,15 @@ BaseScreen {
     id: basescreen
     anchors.fill: parent
     loadRectangles: false
+    property bool isPreview: Qt.application.arguments.indexOf("--qmlpreview") !== -1
 
-    Connections {
-        target: ThreadManager
-        function onStartedDay() {
-            ScreenManager.goTo("ScreensQml/Exercise_Screen.qml");
+    Loader {
+        active: !basescreen.isPreview
+        sourceComponent: Connections {
+            target: ThreadManager
+            function onStartedDay() {
+                ScreenManager.goTo("ScreensQml/Exercise_Screen.qml");
+            }
         }
     }
 
@@ -21,7 +25,11 @@ BaseScreen {
         p_text: "test"
 
         onClicked: {
-            ThreadManager.startDay();
+            if (basescreen.isPreview) {
+                ScreenManager.goTo("ScreensQml/Exercise_Screen.qml");
+            } else {
+                ThreadManager.startDay();
+            }
         }
     }
 }

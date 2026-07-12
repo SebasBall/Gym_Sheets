@@ -1,170 +1,105 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 
-/**
- * Custom input component with configurable margins, borders, colors,
- * placeholder text, and font styling.
- *
- * Features:
- * - Optional border and background rectangles
- * - Customizable font family, size, bold/italic/underline
- * - Placeholder text with independent styling
- * - Optional text border highlight
- * - Validators to restrict spaces in input
- */
-Item {
+MyRectangle {
     id: root
 
-    /** Margin around the TextInput content */
-    property real p_margins: 16
-    /** Border thickness in pixels */
-    property real p_borderSize: 0
-    /** Corner radius for rounded borders/backgrounds */
-    property real p_radius: 0
-    /** Warning time (ms) for validation feedback, if used externally */
-    property real p_warningTime: 250
-
-    /** Font size for input and placeholder text */
-    property int p_fontSize: 16
-
-    /** Background fill color */
-    property color p_mainColor: "white"
-    /** Border color */
-    property color p_borderColor: "black"
-    /** Border color when in warning state */
-    property color p_warningBorderColor: "#c70000"
-    /** Background color when in warning state */
-    property color p_warningColor: "#fffafa"
-    /** Color of optional text border rectangle */
-    property color p_textBorderColor: "yellow"
-    /** Text color for input content */
+    clip: true
+    property string p_placeHolderText: "Place Holder"
+    property real p_textMargins: 16
+    property real p_textMarginsV: p_textMargins
+    property real p_textMarginsH: p_textMargins
+    property int p_textSize: 16
+    property bool p_textBold: false
+    property bool p_textItalic: false
+    property bool p_textUnderline: false
+    property string p_textFontName: "Roboto,Segoe UI,San Francisco,DejaVu Sans"
     property color p_textColor: "black"
-    /** Placeholder text color */
-    property color p_placeHolderColor: "gray"
-
-    /** Whether to load the background rectangle */
-    property bool p_loadBackgroundRect: true
-    /** Show a border around the text content if true */
+    property int p_textAlign: Text.AlignLeft
     property bool p_showTextBorder: false
-    /** Bold font for input text */
-    property bool p_fontBold: false
-    /** Italic font for input text */
-    property bool p_fontItalic: false
-    /** Underlined font for input text */
-    property bool p_underline: false
-    /** Bold font for placeholder text */
-    property bool p_placeHolderBold: false
-    /** Italic font for placeholder text */
-    property bool p_placeHolderItalic: true
-    /** Underlined font for placeholder text */
-    property bool p_placeHolderUnderline: false
-    /** Enable placeholder rendering if true */
-    property bool p_placeHolderEnabled: true
-
+    property int p_textWrap: Text.Wrap
+    property var p_activeValidator: noSpaceStart
     property bool p_isPassword: false
-
-    /** Font family list for input and placeholder */
-    property string p_fontName: "Roboto,Segoe UI,San Francisco,DejaVu Sans"
-    /** Placeholder text string */
-    property string p_placeHolderText: "Place Holder Text"
-
-    /** Horizontal alignment for text (left, right, center, justify) */
-    property int p_horizontalAlign: Text.AlignLeft
-
-    property RegularExpressionValidator p_activeValidator: noSpaceStart
+    property color p_placeHolderColor: "gray"
+    property bool p_placeHolderBold: false
+    property bool p_placeHolderItalic: false
+    property bool p_placeHolderUnderline: false
+    property int p_textVerticalAlign: Text.AlignVCenter
+    property bool p_placeHolderActive: textInput.text === "" && !textInput.activeFocus && root.p_placeHolderText != ""
 
     signal focused
 
-    // Height is based on implicit input height plus margins
-    height: input.implicitHeight + (p_margins * 2)
-    implicitHeight: input.implicitHeight + (p_margins * 2)
+    height: (p_placeHolderActive ? placeHolderLoader.implicitHeight : textInput.implicitHeight) + (p_textMarginsV * 2) + root.borderMargin(0) + root.borderMargin(1)
+    width: (p_placeHolderActive ? placeHolderLoader.implicitWidth : textInput.implicitWidth) + (p_textMarginsH * 2) + root.borderMargin(2) + root.borderMargin(3)
 
-    /** Loader for border rectangle (optional, controlled by p_borderSize) */
-    Loader {
-        id: borderLoader
-        anchors.fill: parent
-        active: p_borderSize > 0 && p_loadBackgroundRect
-        sourceComponent: Rectangle {
-            anchors.fill: parent
-            color: p_borderColor
-            radius: p_radius
-        }
-    }
-
-    /** Loader for background rectangle (optional, controlled by p_loadBackgroundRect) */
-    Loader {
-        id: rectangleLoader
-        anchors.fill: parent
-        active: p_loadBackgroundRect
-        sourceComponent: Rectangle {
-            anchors.fill: parent
-            anchors.margins: p_borderSize
-            color: p_mainColor
-            radius: p_radius - p_borderSize
-        }
-    }
+    implicitHeight: (p_placeHolderActive ? placeHolderLoader.implicitHeight : textInput.implicitHeight) + (p_textMarginsV * 2) + root.borderMargin(0) + root.borderMargin(1)
+    implicitWidth: (p_placeHolderActive ? placeHolderLoader.implicitWidth : textInput.implicitWidth) + (p_textMarginsH * 2) + root.borderMargin(2) + root.borderMargin(3)
 
     /** Main text input field */
     TextInput {
-        id: input
+        id: textInput
+
+        z: 2
         anchors.fill: parent
-        anchors.margins: p_margins
+        anchors.topMargin: root.p_textMarginsV + root.borderMargin(0)
+        anchors.bottomMargin: root.p_textMarginsV + root.borderMargin(1)
+        anchors.leftMargin: root.p_textMarginsH + root.borderMargin(2)
+        anchors.rightMargin: root.p_textMarginsH + root.borderMargin(3)
 
-        clip: true
-        font.pixelSize: p_fontSize
-        font.family: p_fontName
-        color: p_textColor
-        horizontalAlignment: p_horizontalAlign
+        font.pixelSize: root.p_textSize
+        font.family: root.p_textFontName
+        color: root.p_textColor
+        horizontalAlignment: root.p_textAlign
+        verticalAlignment: root.p_textVerticalAlign
 
-        // Choose validator depending on space rules
-        validator: p_activeValidator
+        font.bold: root.p_textBold
+        font.italic: root.p_textItalic
+        font.underline: root.p_textUnderline
+        wrapMode: root.p_textWrap
 
-        echoMode: p_isPassword ? TextInput.Password : TextInput.Normal
+        validator: root.p_activeValidator
+        echoMode: root.p_isPassword ? TextInput.Password : TextInput.Normal
 
-        font.bold: p_fontBold
-        font.italic: p_fontItalic
-        font.underline: p_underline
-
-        /** Loader for placeholder text (shown when empty, not focused
-            and place holder enabled) */
         Loader {
             id: placeHolderLoader
+
             anchors.fill: parent
-            active: input.text === "" && !input.activeFocus && p_placeHolderEnabled
+            active: root.p_placeHolderActive
+
             sourceComponent: Text {
                 anchors.fill: parent
-                font.pixelSize: p_fontSize
-                font.family: p_fontName
-                text: p_placeHolderText
-                color: p_placeHolderColor
-                font.bold: p_placeHolderBold
-                font.italic: p_placeHolderItalic
-                font.underline: p_placeHolderUnderline
-                horizontalAlignment: p_horizontalAlign
+
+                text: root.p_placeHolderText
+
+                font.pixelSize: root.p_textSize
+                font.family: root.p_textFontName
+                color: root.p_placeHolderColor
+
+                font.bold: root.p_placeHolderBold
+                font.italic: root.p_placeHolderItalic
+                font.underline: root.p_placeHolderUnderline
+
+                horizontalAlignment: root.p_textAlign
+                verticalAlignment: root.p_textVerticalAlign
+                wrapMode: root.p_textWrap
             }
         }
 
-        /** Loader for optional text border highlight */
         Loader {
             id: textBorderLoader
-            active: p_showTextBorder
+            active: root.p_showTextBorder
             anchors.fill: parent
             sourceComponent: Rectangle {
                 anchors.fill: parent
-                border.color: p_textBorderColor
+                border.color: "red"
                 border.width: 2
-                color: colors.transparent
+                color: "transparent"
             }
         }
     }
 
-    /** MouseArea to focus the text input when clicked */
-    MouseArea {
-        anchors.fill: parent
-        anchors.margins: p_borderSize
-        onClicked: {
-            input.forceActiveFocus();
-            root.focused();
-        }
+    onClicked: {
+        textInput.forceActiveFocus();
     }
 
     /** Validator: disallow all spaces */
@@ -184,7 +119,7 @@ Item {
         regularExpression: /^[0-9]+$/
     }
 
-    property alias text: input.text
+    property alias text: textInput.text
     property alias noSpaces: noSpaces
     property alias noSpaceStart: noSpaceStart
     property alias onlyNumbers: onlyNumbers

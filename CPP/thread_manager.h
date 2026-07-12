@@ -36,6 +36,7 @@ private slots:
 signals:
   void startedDay();
   void gotExerciseData(Exercise exercise, QList<Record> records);
+  void completedExercise(bool dayCompleted);
 };
 
 #endif // THREAD_MANAGER_H

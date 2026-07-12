@@ -37,6 +37,10 @@ file(GLOB_RECURSE QML_Files
 	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 	"GeneralQml/*.qml"
 	"ScreensQml/*.qml"
+	"AppQml/*.qml"
+	"AppQml/*.js"
+	"GeneralQml/*.js"
+	"ScreensQml/*.js"
 )
 
 qt_add_qml_module(Gym_Sheets

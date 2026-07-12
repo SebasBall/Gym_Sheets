@@ -11,12 +11,12 @@
 
 struct Exercise {
   Q_GADGET
+public:
   Q_PROPERTY(int id MEMBER id)
   Q_PROPERTY(QString name MEMBER name)
   Q_PROPERTY(QString video MEMBER video)
   Q_PROPERTY(QString guide MEMBER guide)
   Q_PROPERTY(QString notes MEMBER notes)
-public:
   int id;
   QString name;
   QString video;
@@ -26,15 +26,15 @@ public:
 
 struct Record {
   Q_GADGET
+public:
   Q_PROPERTY(QString resistance MEMBER resistance)
   Q_PROPERTY(QString reps MEMBER reps)
-  Q_PROPERTY(QString type MEMBER type)
+  Q_PROPERTY(QString effort MEMBER effort)
   Q_PROPERTY(QString notes MEMBER notes)
   Q_PROPERTY(int training MEMBER training)
-public:
   QString resistance;
   QString reps;
-  QString type;
+  QString effort;
   QString notes;
   int training;
 };
@@ -51,7 +51,7 @@ public slots:
   void startDbConnection();
   void startDay();
   void getExerciseData();
-  void completeExercise(QList<Record> records);
+  void completeExercise(const QList<Record> records);
 
 private:
   int m_currentTasks = 0;
@@ -77,7 +77,8 @@ signals:
   void addTask();
   void completeTask();
   void startedDay();
-  void gotExerciseData(Exercise exercise, QList<Record> records);
+  void gotExerciseData(const Exercise exercise, const QList<Record> records);
+  void completedExercise(bool dayCompleted);
 };
 
 #endif // THREAD_WORKER_H

@@ -48,7 +48,7 @@ SELECT
 	r.ExerciseId,
 	r.Resistance,
 	r.Reps,
-	st.Type,
+	st.Type AS Effort,
 	r.Notes,
 	r.Training
 FROM Records r

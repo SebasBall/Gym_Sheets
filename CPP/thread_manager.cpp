@@ -28,9 +28,11 @@ ThreadManager::ThreadManager(QObject *parent) : QObject{parent} {
             &ThreadManager::gotExerciseData);
     connect(newWorker, &ThreadWorker::startedDay, this,
             &ThreadManager::startedDay);
+    connect(newWorker, &ThreadWorker::completedExercise, this,
+            &ThreadManager::completedExercise);
   }
 
-  startDbConnection(-1);
+  startDbConnection(m_threadCounter);
 }
 
 ThreadManager::~ThreadManager() {
@@ -91,7 +93,6 @@ void ThreadManager::getExerciseData() {
 void ThreadManager::completeExercise(QVariantList records) {
   qDebug() << "Started setting records";
   threadCountUpdate();
-  qDebug() << records;
   QList<Record> recordsList;
 
   for (const QVariant &row : records) {

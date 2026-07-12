@@ -9,6 +9,13 @@ QtObject {
     }
 
     function goTo(screen) {
+        screenManager.source = "";
         screenManager.source = screen;
+    }
+
+    function reload() {
+        var currentScreen = screenManager.source;
+        screenManager.source = "";
+        screenManager.source = currentScreen;
     }
 }

@@ -8,7 +8,7 @@ ApplicationWindow {
     visible: true
     title: "Gym_Sheets"
 
-    color: Colors.lightdark
+    color: Colors.light
 
     Loader {
         id: screenLoader

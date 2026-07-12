@@ -2,6 +2,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import "../GeneralQml"
+import "../AppQml"
+import "Exercise_Screen_Logic.js" as Logic
 
 BaseScreen {
     id: basescreen
@@ -11,372 +13,40 @@ BaseScreen {
     property int actualTraining: 0
     property var rutine: []
 
-    function collectInputs() {
-        var results = [];
-        for (var i = 0; i < dataModel.count; i++) {
-            var item = dataModel.get(i);
-            if (item.rowtype === 3) {
-                results.push(item.resistance, item.reps);
-            } else if (item.rowtype === 4) {
-                results.push(item.notes);
-            }
-        }
-        return results;
-    }
-
     ListModel {
         id: dataModel
     }
 
     Component.onCompleted: {
         if (isPreview) {
-            basescreen.rutine = ["RIR 2", "RIR 1", "FALLO"];
-            basescreen.actualTraining = 6;
-            // --- Exercise Header Info ---
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: "Press Inclinado con Mancuernas"
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: false,
-                col1text: "https://youtu.be/J_x6MEFk3DM"
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: false,
-                col1text: "[6 - 8]"
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: false,
-                col1text: "Asiento nivel 6"
-            });
-            // --- Training 1 ---
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: "Training 1"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: true,
-                col1text: "Resistance",
-                col2text: "Reps",
-                col3text: "Effort"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "20kg",
-                col2text: "'7'",
-                col3text: "RIR 2"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "20kg",
-                col2text: "'8'",
-                col3text: "RIR 1"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "8 RP x (1 parcial)",
-                col3text: "FALLO"
-            });
-            // --- Training 2 ---
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: "Training 2"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: true,
-                col1text: "Resistance",
-                col2text: "Reps",
-                col3text: "Effort"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "'6'",
-                col3text: "RIR 2"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "'7'",
-                col3text: "RIR 1"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "25kg",
-                col2text: "'4'",
-                col3text: "FALLO"
-            });
-
-            // --- Training 3 ---
-            dataModel.append({
-                rowtype: 0,
-                isBold: false,
-                col1text: "No se porque pero hoy no pude con 25 Kg y las de 22.5 estaban cogidas entonces me tocó con las de 20kg"
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: "Training 3"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: true,
-                col1text: "Resistance",
-                col2text: "Reps",
-                col3text: "Effort"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "'7'",
-                col3text: "RIR 2"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "7 (1 parcial)",
-                col3text: "RIR 1"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "20kg",
-                col2text: "7 RP x 4 RP x 3",
-                col3text: "FALLO"
-            });
-
-            // --- Training 4 ---
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: "Training 4"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: true,
-                col1text: "Resistance",
-                col2text: "Reps",
-                col3text: "Effort"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "20kg",
-                col2text: "'8'",
-                col3text: "RIR 2"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "'6'",
-                col3text: "RIR 1"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "'8'",
-                col3text: "FALLO"
-            });
-
-            // --- Training 5 ---
-            dataModel.append({
-                rowtype: 0,
-                isBold: false,
-                col1text: "No pude hacer RP, cuando me intenté volver a poner las mancuernas no pude mantenerlas"
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: "Training 5"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: true,
-                col1text: "Resistance",
-                col2text: "Reps",
-                col3text: "Effort"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "'6'",
-                col3text: "RIR 2"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "22.5kg",
-                col2text: "'7'",
-                col3text: "RIR 1"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: false,
-                col1text: "25kg",
-                col2text: "'4'",
-                col3text: "FALLO"
-            });
-
-            // --- Today Training (Routine Section) ---
-            dataModel.append({
-                rowtype: 2,
-                rowHeight: 20
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: "Today Training"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: true,
-                col1text: "Resistance",
-                col2text: "Reps",
-                col3text: "Effort"
-            });
-            dataModel.append({
-                rowtype: 3,
-                col3text: "RIR 2"
-            });
-            dataModel.append({
-                rowtype: 3,
-                col3text: "RIR 1"
-            });
-            dataModel.append({
-                rowtype: 3,
-                col3text: "FALLO"
-            });
-
-            // --- Footer ---
-            dataModel.append({
-                rowtype: 4
-            });
-            dataModel.append({
-                rowtype: 5,
-                col1text: "Complete Day"
-            });
+            Logic.loadPreviewData(dataModel, basescreen);
         } else {
             ThreadManager.getExerciseData();
         }
     }
 
-    Connections {
-        target: ThreadManager
-        function onGotExerciseData(exercise, records) {
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: exercise.name
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: false,
-                col1text: exercise.video
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: false,
-                col1text: exercise.guide
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: false,
-                col1text: exercise.notes
-            });
-            var training = 0;
-            var notes = "";
-            var gotRutine = false;
-            for (var i = 0; i < records.length; i++) {
-                if (i + 1 === records.length) {
-                    basescreen.actualTraining = records[i].training + 1;
-                }
-                if (training != records[i].training) {
-                    if (notes != "") {
-                        dataModel.append({
-                            rowtype: 0,
-                            isBold: false,
-                            col1text: notes
-                        });
-                    }
-                    dataModel.append({
-                        rowtype: 0,
-                        isBold: true,
-                        col1text: "Training " + records[i].training
-                    });
-                    dataModel.append({
-                        rowtype: 1,
-                        isBold: true,
-                        col1text: "Resistance",
-                        col2text: "Reps",
-                        col3text: "Effort"
-                    });
-                    training = records[i].training;
-                    notes = "";
-                    if (!gotRutine && basescreen.rutine.length != 0) {
-                        gotRutine = true;
-                    }
-                }
-                dataModel.append({
-                    rowtype: 1,
-                    isBold: false,
-                    col1text: records[i].resistance,
-                    col2text: records[i].reps,
-                    col3text: records[i].type
-                });
-                notes = notes + records[i].notes;
-                if (!gotRutine) {
-                    basescreen.rutine.push(records[i].type);
+    Loader {
+        active: !basescreen.isPreview
+        sourceComponent: Connections {
+            target: ThreadManager
+            function onGotExerciseData(exercise, records) {
+                Logic.gotExerciseData(exercise, records, dataModel, basescreen);
+            }
+        }
+    }
+
+    Loader {
+        active: !basescreen.isPreview
+        sourceComponent: Connections {
+            target: ThreadManager
+            function onCompletedExercise(dayCompleted) {
+                console.log("received signal with: " + dayCompleted);
+                if (dayCompleted) {
+                    ScreenManager.goTo("ScreensQml/Main_Screen.qml");
+                } else {
+                    ScreenManager.reload();
                 }
             }
-            dataModel.append({
-                rowtype: 2,
-                rowHeight: 20
-            });
-            dataModel.append({
-                rowtype: 0,
-                isBold: true,
-                col1text: "Today Training"
-            });
-            dataModel.append({
-                rowtype: 1,
-                isBold: true,
-                col1text: "Resistance",
-                col2text: "Reps",
-                col3text: "Effort"
-            });
-            for (var i = 0; i < basescreen.rutine.length; i++) {
-                dataModel.append({
-                    rowtype: 3,
-                    col3text: basescreen.rutine[i]
-                });
-            }
-            dataModel.append({
-                rowtype: 4
-            });
-            dataModel.append({
-                rowtype: 5,
-                col1text: "Complete Day"
-            });
         }
     }
 
@@ -392,91 +62,110 @@ BaseScreen {
 
         delegate: DelegateChooser {
             role: "rowtype"
+
             DelegateChoice {
-                roleValue: 0
+                roleValue: "1Label"
                 Item {
                     id: root0
-                    required property string col1text
-                    required property bool isBold
+                    required property var model
+
                     height: col1root0.implicitHeight
                     width: ListView.view.width
                     Layout.fillWidth: true
-                    MyRectangle {
+                    AppLabel {
                         id: col1root0
-                        p_text: root0.col1text
                         width: parent.width
-                        p_fontSize: 16
-                        p_fontName: Fonts.lexend.name
-                        p_horizontalAlign: Text.AlignHCenter
-                        p_fontBold: root0.isBold
+
+                        p_text: root0.model.col1text != "" ? root0.model.col1text : "Place Holder"
+                        p_textBold: root0.model.isBold
+                        p_textSize: root0.model.fontSize > 0 ? root0.model.fontSize : 16
+
+                        p_borderArray: (root0.model && root0.model.borderArray) ? JSON.parse(root0.model.borderArray) : [1, 0, 1, 1]
+                        p_radiusArray: (root0.model && root0.model.radiusArray) ? JSON.parse(root0.model.radiusArray) : [0, 0, 0, 0]
                     }
                 }
             }
+
             DelegateChoice {
-                roleValue: 1
+                roleValue: "Spacer"
                 Item {
                     id: root1
-                    required property string col1text
-                    required property string col2text
-                    required property string col3text
-                    required property bool isBold
-                    width: ListView.view.width
-                    height: Math.max(col1root1.implicitHeight, col2root1.implicitHeight, col3root1.implicitHeight)
-                    RowLayout {
-                        width: parent.width
-                        spacing: 0
-                        MyRectangle {
-                            id: col1root1
-                            p_text: root1.col1text
-                            Layout.fillWidth: true
-                            p_fontSize: 16
-                            p_fontName: Fonts.lexend.name
-                            p_horizontalAlign: Text.AlignHCenter
-                            p_fontBold: root1.isBold
-                        }
-                        MyRectangle {
-                            id: col2root1
-                            p_text: root1.col2text
-                            Layout.fillWidth: true
-                            p_fontSize: 16
-                            p_fontName: Fonts.lexend.name
-                            p_horizontalAlign: Text.AlignHCenter
-                            p_fontBold: root1.isBold
-                        }
-                        MyRectangle {
-                            id: col3root1
-                            p_text: root1.col3text
-                            Layout.fillWidth: true
-                            p_fontSize: 16
-                            p_fontName: Fonts.lexend.name
-                            p_horizontalAlign: Text.AlignHCenter
-                            p_fontBold: root1.isBold
-                        }
-                    }
-                }
-            }
-            DelegateChoice {
-                roleValue: 2
-                Item {
-                    id: root2
                     required property real rowHeight
                     height: rowHeight
                     width: ListView.view.width
                     Layout.fillWidth: true
                     MyRectangle {
-                        id: col1root2
+                        id: col1root1
                         width: parent.width
-                        height: root2.rowHeight
-                        p_textEnabled: false
-                        p_rectangleColor: Colors.secondary
+                        height: root1.rowHeight
+                        p_rectangleColor: Colors.light
+                    }
+                }
+            }
+
+            DelegateChoice {
+                roleValue: "3Label"
+                Item {
+                    id: root2
+                    required property var model
+                    width: ListView.view.width
+                    height: Math.max(col1root2.implicitHeight, col2root2.implicitHeight, col3root2.implicitHeight)
+                    RowLayout {
+                        width: parent.width
+                        height: parent.height
+                        spacing: 0
+                        AppLabel {
+                            id: col1root2
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 0
+                            Layout.fillHeight: true
+
+                            p_textMargins: 8
+
+                            p_text: root2.model.col1text != "" ? root2.model.col1text : "Place Holder"
+                            p_textBold: root2.model.isBold
+                            p_textSize: root2.model.fontSize > 0 ? root2.model.fontSize : 16
+
+                            p_borderArray: (root2.model && root2.model.borderArray1) ? JSON.parse(root2.model.borderArray1) : [1, 0, 1, 0]
+                            p_radiusArray: (root2.model && root2.model.radiusArray1) ? JSON.parse(root2.model.radiusArray1) : [0, 0, 0, 0]
+                        }
+
+                        AppLabel {
+                            id: col2root2
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 0
+                            Layout.fillHeight: true
+                            p_textMargins: 8
+
+                            p_text: root2.model.col2text != "" ? root2.model.col2text : "Place Holder"
+                            p_textBold: root2.model.isBold
+                            p_textSize: root2.model.fontSize > 0 ? root2.model.fontSize : 16
+
+                            p_borderArray: (root2.model && root2.model.borderArray2) ? JSON.parse(root2.model.borderArray2) : [1, 0, 1, 0]
+                            p_radiusArray: (root2.model && root2.model.radiusArray2) ? JSON.parse(root2.model.radiusArray2) : [0, 0, 0, 0]
+                        }
+
+                        AppLabel {
+                            id: col3root2
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 0
+                            Layout.fillHeight: true
+                            p_textMargins: 8
+
+                            p_text: root2.model.col3text != "" ? root2.model.col3text : "Place Holder"
+                            p_textBold: root2.model.isBold
+                            p_textSize: root2.model.fontSize > 0 ? root2.model.fontSize : 16
+
+                            p_borderArray: (root2.model && root2.model.borderArray3) ? JSON.parse(root2.model.borderArray3) : [1, 0, 1, 1]
+                            p_radiusArray: (root2.model && root2.model.radiusArray3) ? JSON.parse(root2.model.radiusArray3) : [0, 0, 0, 0]
+                        }
                     }
                 }
             }
             DelegateChoice {
-                roleValue: 3
+                roleValue: "2Fields1Label"
                 Item {
                     id: root3
-                    required property string col3text
                     required property var model
                     required property int index
                     width: ListView.view.width
@@ -484,99 +173,111 @@ BaseScreen {
                     RowLayout {
                         width: parent.width
                         spacing: 0
-                        MyTextField {
+
+                        AppTextField {
                             id: col1root3
-                            text: root3.model.userValue ?? ""
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 0
+                            Layout.fillHeight: true
+                            p_textMargins: 8
+
+                            text: dataModel.get(root3.index).resistance ?? ""
+                            p_placeHolderText: "Add Resistance"
+
                             onTextChanged: {
                                 dataModel.setProperty(root3.index, "resistance", text);
                             }
+
+                            p_borderArray: (root3.model && root3.model.borderArray1) ? JSON.parse(root3.model.borderArray1) : [1, 0, 1, 0]
+                            p_radiusArray: (root3.model && root3.model.radiusArray1) ? JSON.parse(root3.model.radiusArray1) : [0, 0, 0, 0]
+                        }
+
+                        AppTextField {
+                            id: col2root3
                             Layout.fillWidth: true
                             Layout.preferredWidth: 0
-                            p_fontSize: 16
-                            p_fontName: Fonts.lexend.name
-                            p_horizontalAlign: Text.AlignHCenter
-                        }
-                        MyTextField {
-                            id: col2root3
-                            text: root3.model.userValue ?? ""
+                            Layout.fillHeight: true
+                            p_textMargins: 8
+
+                            text: dataModel.get(root3.index).reps ?? ""
+                            p_placeHolderText: "Add Reps"
+
                             onTextChanged: {
                                 dataModel.setProperty(root3.index, "reps", text);
                             }
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: 0
-                            p_fontSize: 16
-                            p_fontName: Fonts.lexend.name
-                            p_horizontalAlign: Text.AlignHCenter
+                            p_borderArray: (root3.model && root3.model.borderArray1) ? JSON.parse(root3.model.borderArray1) : [1, 0, 1, 0]
+                            p_radiusArray: (root3.model && root3.model.radiusArray1) ? JSON.parse(root3.model.radiusArray1) : [0, 0, 0, 0]
                         }
-                        MyRectangle {
+
+                        AppLabel {
                             id: col3root3
-                            p_text: root3.col3text
+
+                            p_text: root3.model.col3text
                             Layout.fillWidth: true
                             Layout.preferredWidth: 0
-                            p_fontSize: 16
-                            p_fontName: Fonts.lexend.name
-                            p_horizontalAlign: Text.AlignHCenter
+                            Layout.fillHeight: true
+                            p_textMargins: 8
+
+                            p_borderArray: (root3.model && root3.model.borderArray1) ? JSON.parse(root3.model.borderArray1) : [1, 0, 1, 1]
+                            p_radiusArray: (root3.model && root3.model.radiusArray1) ? JSON.parse(root3.model.radiusArray1) : [0, 0, 0, 0]
                         }
                     }
                 }
             }
             DelegateChoice {
-                roleValue: 4
+                roleValue: "1Field"
                 Item {
                     id: root4
+
                     required property var model
                     required property int index
                     height: col1root4.implicitHeight
                     width: ListView.view.width
-                    Layout.fillWidth: true
-                    MyTextField {
+
+                    AppTextField {
                         id: col1root4
-                        text: root4.model.userValue ?? ""
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        text: dataModel.get(root4.index).notes ?? ""
+                        p_placeHolderText: "Add Notes"
+
                         onTextChanged: {
                             dataModel.setProperty(root4.index, "notes", text);
                         }
-                        width: parent.width
-                        p_fontSize: 16
-                        p_fontName: Fonts.lexend.name
-                        p_horizontalAlign: Text.AlignHCenter
+
+                        p_borderArray: (root4.model && root4.model.borderArray1) ? JSON.parse(root4.model.borderArray1) : [1, 1, 1, 1]
+                        p_radiusArray: (root4.model && root4.model.radiusArray1) ? JSON.parse(root4.model.radiusArray1) : [0, 0, 1, 1]
                     }
                 }
             }
+
             DelegateChoice {
-                roleValue: 5
+                roleValue: "1Button"
                 Item {
                     id: root5
-                    required property string col1text
+
+                    required property var model
                     height: col1root5.implicitHeight
                     width: ListView.view.width
-                    Layout.fillWidth: true
-                    MyButton {
+
+                    AppButton {
                         id: col1root5
-                        p_text: root5.col1text
+                        p_text: root5.model.col1text
                         width: parent.width
-                        p_fontSize: 16
-                        p_fontName: Fonts.lexend.name
-                        p_horizontalAlign: Text.AlignHCenter
                         onClicked: {
-                            var inputs = basescreen.collectInputs();
-                            var records = [];
-                            for (var i = 0; i < basescreen.rutine.length; i++) {
-                                var record = [];
-                                record.push(inputs[i * 2]);
-                                record.push(inputs[i * 2 + 1]);
-                                if (i + 1 === basescreen.rutine.length) {
-                                    record.push(inputs[inputs.length - 1]);
-                                } else {
-                                    record.push("");
-                                }
-                                record.push(basescreen.actualTraining);
-                                records.push(record);
+                            if (basescreen.isPreview) {
+                                Logic.completePreview(dataModel, basescreen);
+                            } else {
+                                Logic.completeExercise(dataModel, basescreen, ThreadManager);
                             }
-                            ThreadManager.completeExercise(records);
                         }
                     }
                 }
             }
+
+            // space
+
         }
     }
 }

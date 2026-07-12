@@ -92,7 +92,7 @@ void ThreadWorker::startDay() {
   if (query.exec()) {
     qInfo() << "Successfully completed start day";
   } else {
-    qWarning() << "The query didn't set any value";
+    qWarning() << "The query didn't set any value" << query.lastError().text();
   }
 
   emit startedDay();
@@ -142,7 +142,7 @@ void ThreadWorker::getExerciseData() {
       Record record;
       record.resistance = query.value(0).toString();
       record.reps = query.value(1).toString();
-      record.type = query.value(2).toString();
+      record.effort = query.value(2).toString();
       record.notes = query.value(3).toString();
       record.training = query.value(4).toInt();
       records.append(record);
@@ -163,6 +163,7 @@ void ThreadWorker::completeExercise(QList<Record> records) {
   QSqlDatabase db = QSqlDatabase::database(m_connectionName);
   QSqlQuery query(db);
   QString rawQuery;
+  bool dayCompleted = false;
 
   rawQuery = callQuery(":SQL/Records.sql", "setRecord");
   if (rawQuery.isEmpty()) {
@@ -192,9 +193,39 @@ void ThreadWorker::completeExercise(QList<Record> records) {
     query.clear();
   }
 
-  // NEXT STEP DOING QUERY TO UPDATE THE VALUE ON USER TABLE OF THE
-  // CURRENT EXERCISE AND CHECK IF IT WAS THE LAST ONE TO SEND A SIGNAL
-  // TO COMPLETE THE TRAINING
+  rawQuery = callQuery(":SQL/User.sql", "checkDayCompleted");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
 
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    while (query.next()) {
+      qInfo() << "Successfully checked if day was completed";
+      dayCompleted = query.value(0).toBool();
+    }
+  } else {
+    qWarning() << "Error checking if day completed:"
+               << query.lastError().text();
+  }
+  query.clear();
+
+  if (!dayCompleted) {
+    rawQuery = callQuery(":SQL/User.sql", "updateCurrentExercise");
+    if (rawQuery.isEmpty()) {
+      emit completeTask();
+      return;
+    }
+
+    query.prepare(rawQuery);
+    if (query.exec()) {
+      qInfo() << "Updated current exercise successfully";
+    } else {
+      qWarning() << "Error updating current day" << query.lastError().text();
+    }
+  }
+
+  emit completedExercise(dayCompleted);
   emit completeTask();
 }

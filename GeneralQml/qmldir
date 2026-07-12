@@ -3,6 +3,7 @@ singleton Colors 1.0 Singletons/Colors.qml
 singleton Fonts 1.0 Singletons/Fonts.qml
 singleton ScreenManager 1.0 Singletons/ScreenManager.qml
 BaseScreen 1.0 BaseScreen.qml
+MyLabel 1.0 MyLabel.qml
 MyButton 1.0 MyButton.qml
 MyRectangle 1.0 MyRectangle.qml
 MyTextField 1.0 MyTextField.qml

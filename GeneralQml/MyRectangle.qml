@@ -6,66 +6,110 @@ import QtQuick.Effects
 Item {
     id: root
 
-    property real p_borderSize: 0
-    property real p_radius: 0
+    signal clicked
+    signal entered
+    signal pressed
+    signal released
+    signal exited
 
-    property real p_Margins: 16
-    property real p_VMargins: p_Margins
-    property real p_HMargins: p_Margins
-
-    property real p_shadowOpacity: 1
-    property real p_shadowSpread: 1
-    property real p_shadowBlur: 1
-
-    property int p_fontSize: 16
-
-    property int p_horizontalAlign: Text.AlignLeft
-
-    property bool p_gradientEnabled: false
-    /** Bold font for input text */
-    property bool p_fontBold: false
-    /** Italic font for input text */
-    property bool p_fontItalic: false
-    /** Underlined font for input text */
-    property bool p_underline: false
-
-    property bool p_showTextBorder: false
-
-    property bool p_textEnabled: true
-
+    property color p_rectangleColor: "Yellow"
     property bool p_rectangleEnabled: true
+    property bool p_gradientEnabled: false
+
+    property real p_borderSize: 0
+    property var p_borderArray: [1, 1, 1, 1]
+    property color p_borderColor: "black"
+
+    property real p_radius: 0
+    property var p_radiusArray: [1, 1, 1, 1]
+
+    property color p_gradientColor1: "red"
+    property color p_gradientColor2: "blue"
+    property LinearGradient p_gradient: LinearGradient {
+        x1: 0
+        y1: 0
+        x2: root.width
+        y2: root.height
+        GradientStop {
+            position: 0.0
+            color: root.p_gradientColor1
+        }
+        GradientStop {
+            position: 1.0
+            color: root.p_gradientColor2
+        }
+    }
+
+    property bool p_borderGradientEnabled: false
+    property color p_borderGradientColor1: "green"
+    property color p_borderGradientColor2: "yellow"
+    property LinearGradient p_borderGradient: LinearGradient {
+        x1: 0
+        y1: 0
+        x2: root.width
+        y2: root.height
+        GradientStop {
+            position: 0.0
+            color: root.p_borderGradientColor1
+        }
+        GradientStop {
+            position: 1.0
+            color: root.p_borderGradientColor2
+        }
+    }
 
     property bool p_shadowEnabled: false
+    property color p_shadowColor: p_rectangleColor
+    property int p_shadowOffset: 5
 
-    property color p_borderColor: "black"
-    property color p_gradientBottom: "green"
-    property color p_gradientTop: "green"
-    property color p_rectangleColor: "white"
-    property color p_textColor: "black"
-    property color p_textBorderColor: "yellow"
+    function borderMargin(index) {
+        return root.p_borderArray[index] == true ? root.p_borderSize : 0;
+    }
 
-    property color p_shadowColor: "black"
+    function cornerRadiusInside(cornerIndex, side1Index, side2Index) {
+        var radius = root.p_radiusArray[cornerIndex] == 1 ? root.p_radius : 0;
+        var hasBorder = root.p_borderArray[side1Index] == 1 || root.p_borderArray[side2Index] == 1;
+        var radiusDifference = hasBorder ? root.p_borderSize : 0;
+        return Math.max(0, radius - radiusDifference);
+    }
 
-    property string p_text: "Place Holder"
-    property string p_fontName: "Roboto,Segoe UI,San Francisco,DejaVu Sans"
-
-    height: textLoader.implicitHeight + (p_VMargins * 2)
-    width: textLoader.implicitWidth + (p_HMargins * 2)
-
-    implicitHeight: textLoader.implicitHeight + (p_VMargins * 2)
-    implicitWidth: textLoader.implicitWidth + (p_HMargins * 2)
+    function cornerRadiusOutside(index) {
+        return root.p_radiusArray[index] == 1 ? root.p_radius : 0;
+    }
 
     Loader {
-        id: shadowLoader
+        id: rectangleLoader
+        active: root.p_rectangleEnabled
         anchors.fill: parent
-        active: root.p_shadowEnabled
-        sourceComponent: RectangularShadow {
+        z: 1
+
+        sourceComponent: Shape {
+            id: rectangleShape
+
             anchors.fill: parent
-            radius: root.p_radius
-            opacity: root.p_shadowOpacity
-            color: root.p_shadowColor
-            spread: root.p_shadowSpread
-            blur: root.p_shadowBlur
+
+            anchors.topMargin: root.borderMargin(0)
+            anchors.bottomMargin: root.borderMargin(1)
+            anchors.leftMargin: root.borderMargin(2)
+            anchors.rightMargin: root.borderMargin(3)
+
+            preferredRendererType: Shape.CurveRenderer
+
+            ShapePath {
+                fillColor: !root.p_gradientEnabled ? root.p_rectangleColor : null
+                fillGradient: root.p_gradientEnabled ? root.p_gradient : null
+
+                strokeWidth: -1
+                PathRectangle {
+                    width: rectangleShape.width
+                    height: rectangleShape.height
+
+                    topLeftRadius: root.cornerRadiusInside(0, 0, 2)
+                    topRightRadius: root.cornerRadiusInside(1, 0, 3)
+                    bottomLeftRadius: root.cornerRadiusInside(2, 1, 2)
+                    bottomRightRadius: root.cornerRadiusInside(3, 1, 3)
+                }
+            }
         }
     }
 
@@ -73,104 +117,69 @@ Item {
         id: borderLoader
         active: root.p_borderSize > 0
         anchors.fill: parent
+        z: 0
 
-        sourceComponent: Rectangle {
+        sourceComponent: Shape {
+            id: borderShape
+
             anchors.fill: parent
-            color: root.p_borderColor
+            preferredRendererType: Shape.CurveRenderer
+
+            ShapePath {
+                fillColor: !root.p_borderGradientEnabled ? root.p_borderColor : null
+                fillGradient: root.p_borderGradientEnabled ? root.p_borderGradient : null
+
+                strokeWidth: -1
+                PathRectangle {
+                    width: borderShape.width
+                    height: borderShape.height
+
+                    topLeftRadius: root.cornerRadiusOutside(0)
+                    topRightRadius: root.cornerRadiusOutside(1)
+                    bottomLeftRadius: root.cornerRadiusOutside(2)
+                    bottomRightRadius: root.cornerRadiusOutside(3)
+                }
+            }
+        }
+    }
+
+    Loader {
+        id: shadowLoader
+
+        active: root.p_shadowEnabled
+        anchors.fill: parent
+        z: -2
+        sourceComponent: RectangularShadow {
+            anchors.fill: parent
+            offset.x: root.p_shadowOffset
+            offset.y: root.p_shadowOffset
             radius: root.p_radius
-        }
-    }
-
-    Loader {
-        active: root.p_rectangleEnabled
-        anchors.fill: parent
-        sourceComponent: Item {
-
-            anchors.fill: parent
-            Shape {
-                id: rectangleShape
-                anchors.fill: parent
-                anchors.margins: root.p_borderSize
-                layer.enabled: true
-                layer.samples: 6
-
-                ShapePath {
-                    strokeWidth: 0
-
-                    fillColor: !root.p_gradientEnabled ? root.p_rectangleColor : null
-                    fillGradient: root.p_gradientEnabled ? linearGradient : null
-
-                    PathRectangle {
-                        id: rectangleShapePath
-                        x: 0
-                        y: 0
-                        width: rectangleShape.width
-                        height: rectangleShape.height
-                        radius: root.p_radius - root.p_borderSize
-                    }
-                }
-            }
-
-            LinearGradient {
-                id: linearGradient
-
-                x1: 0
-                y1: rectangleShape.height
-                x2: rectangleShape.width
-                y2: 0
-
-                GradientStop {
-                    position: 0
-                    color: root.p_gradientBottom
-                }
-
-                GradientStop {
-                    position: 1
-                    color: root.p_gradientTop
-                }
-            }
-        }
-    }
-
-    Loader {
-        id: textLoader
-        active: root.p_textEnabled
-        anchors.fill: parent
-        anchors.topMargin: root.p_VMargins
-        anchors.bottomMargin: root.p_VMargins
-        anchors.rightMargin: root.p_HMargins
-        anchors.leftMargin: root.p_HMargins
-        sourceComponent: Text {
-            text: root.p_text
-
-            font.pixelSize: root.p_fontSize
-            font.family: root.p_fontName
-            color: root.p_textColor
-            horizontalAlignment: root.p_horizontalAlign
-
-            font.bold: root.p_fontBold
-            font.italic: root.p_fontItalic
-            font.underline: root.p_underline
-            wrapMode: Text.Wrap
-
-            Loader {
-                id: textBorderLoader
-                active: root.p_showTextBorder
-                anchors.fill: parent
-                sourceComponent: Rectangle {
-                    anchors.fill: parent
-                    border.color: root.p_textBorderColor
-                    border.width: 2
-                    color: "transparent"
-                }
-            }
+            color: Qt.darker(root.p_shadowColor, 1.6)
         }
     }
 
     MouseArea {
+        id: mouseAreaId
+
+        z: 3
         anchors.fill: parent
+        hoverEnabled: true
+
         onClicked: {
             root.forceActiveFocus();
+            root.clicked();
+        }
+        onPressed: {
+            root.pressed();
+        }
+        onReleased: {
+            root.released();
+        }
+        onEntered: {
+            root.entered();
+        }
+        onExited: {
+            root.exited();
         }
     }
 }
