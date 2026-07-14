@@ -10,7 +10,7 @@ QtObject {
 
     function goTo(screen) {
         screenManager.source = "";
-        screenManager.source = screen;
+        screenManager.source = "ScreensQml/" + screen + ".qml";
     }
 
     function reload() {

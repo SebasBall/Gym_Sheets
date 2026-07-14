@@ -32,7 +32,6 @@ set_source_files_properties(
 	${QML_Singletons}
 	PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 )
-
 file(GLOB_RECURSE QML_Files
 	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 	"GeneralQml/*.qml"
@@ -69,5 +68,19 @@ qt_add_resources(Gym_Sheets "Fonts"
     BASE "Fonts"
     FILES Fonts/Lexend-VariableFont_wght.ttf
 )
+
+file(GLOB_RECURSE SQL_Files
+	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+	"SVG/*.svg"
+)
+qt_add_resources(Gym_Sheets "SVG"
+	PREFIX "/SVG"
+	BASE "Fonts"
+	FILES ${SVG_Files}
+)
+
+set_target_properties(Gym_Sheets PROPERTIES 
+    QT_ANDROID_PACKAGE_NAME "com.sebapps.gymsheets"
+    QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
 
 target_link_libraries(Gym_Sheets PRIVATE Qt6::Quick Qt6::Sql)

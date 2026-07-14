@@ -35,7 +35,8 @@ private slots:
 
 signals:
   void startedDay();
-  void gotExerciseData(Exercise exercise, QList<Record> records);
+  void gotExerciseData(Exercise exercise, QList<Record> records,
+                       QList<QString> routine);
   void completedExercise(bool dayCompleted);
 };
 

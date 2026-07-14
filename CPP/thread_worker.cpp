@@ -23,9 +23,17 @@ void ThreadWorker::startDbConnection() {
 
   QSqlDatabase sqliteDb =
       QSqlDatabase::addDatabase("QSQLITE", m_connectionName);
+
+#ifdef Q_OS_ANDROID
+  QString databasePath =
+      QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
+      "/storage.db";
+#else
   QString databasePath =
       QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) +
       "/storage.db";
+#endif
+
   QDir().mkpath(QFileInfo(databasePath).absolutePath());
   sqliteDb.setDatabaseName(databasePath);
   if (!sqliteDb.open()) {
@@ -107,6 +115,7 @@ void ThreadWorker::getExerciseData() {
   QString rawQuery;
   Exercise exercise;
   QList<Record> records;
+  QList<QString> routine;
 
   rawQuery = callQuery(":SQL/Exercises.sql", "getExercise");
   if (rawQuery.isEmpty()) {
@@ -152,7 +161,25 @@ void ThreadWorker::getExerciseData() {
                << query.lastError().text();
   }
 
-  emit gotExerciseData(exercise, records);
+  query.clear();
+  rawQuery = callQuery(":SQL/Series.sql", "getRoutine");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  query.bindValue(":exerciseId", exercise.id);
+  if (query.exec()) {
+    while (query.next()) {
+      routine.append(query.value(0).toString());
+    }
+  } else {
+    qWarning() << "The query didn't select any value:"
+               << query.lastError().text();
+  }
+
+  emit gotExerciseData(exercise, records, routine);
 
   emit completeTask();
 }

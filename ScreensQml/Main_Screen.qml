@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../GeneralQml"
+import "../AppQml"
 
 BaseScreen {
     id: basescreen
@@ -13,12 +14,12 @@ BaseScreen {
         sourceComponent: Connections {
             target: ThreadManager
             function onStartedDay() {
-                ScreenManager.goTo("ScreensQml/Exercise_Screen.qml");
+                ScreenManager.goTo("Exercise_Screen");
             }
         }
     }
 
-    MyButton {
+    AppButton {
         id: startDayButton
 
         anchors.centerIn: parent
@@ -26,7 +27,7 @@ BaseScreen {
 
         onClicked: {
             if (basescreen.isPreview) {
-                ScreenManager.goTo("ScreensQml/Exercise_Screen.qml");
+                ScreenManager.goTo("Exercise_Screen");
             } else {
                 ThreadManager.startDay();
             }

@@ -1,40 +1,61 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Shapes
 import "../GeneralQml"
 import "../AppQml"
 import "Exercise_Screen_Logic.js" as Logic
 
 BaseScreen {
     id: basescreen
+
+    // Base screen configuration
     anchors.fill: parent
     loadRectangles: false
+    // This preview value is to test the screen with the QML Live Preview
+    // and avoid building the app any time that a change is made
     property bool isPreview: Qt.application.arguments.indexOf("--qmlpreview") !== -1
-    property int actualTraining: 0
-    property var rutine: []
 
+    // Basic variables for list view operations
+    property int actualTraining: 0
+    property var routine: []
+
+    // Model to store the rows with the exercise data
     ListModel {
-        id: dataModel
+        id: exerciseModel
     }
 
+    // Model to store the rows with the records data
+    ListModel {
+        id: recordsModel
+    }
+
+    // Load the rows data for the list view
     Component.onCompleted: {
         if (isPreview) {
-            Logic.loadPreviewData(dataModel, basescreen);
+            Logic.loadPreviewData(exerciseModel, recordsModel, basescreen);
         } else {
             ThreadManager.getExerciseData();
         }
     }
 
+    // Connection to the signal from c++ to confirm that the data from the database
+    // was collected, it is on a loader to avoid issues on the logs when testing
+    // through the QML Live Preview
     Loader {
         active: !basescreen.isPreview
         sourceComponent: Connections {
             target: ThreadManager
-            function onGotExerciseData(exercise, records) {
-                Logic.gotExerciseData(exercise, records, dataModel, basescreen);
+            function onGotExerciseData(exercise, records, routine) {
+                basescreen.routine = routine;
+                Logic.appendExerciseData(exercise, exerciseModel);
+                Logic.appendRecordsData(records, recordsModel, basescreen);
             }
         }
     }
 
+    // Connection to the signal from c++ that confirms that the exercise data has
+    // been saved and confirms also if the routine of the day has been completed
     Loader {
         active: !basescreen.isPreview
         sourceComponent: Connections {
@@ -42,7 +63,7 @@ BaseScreen {
             function onCompletedExercise(dayCompleted) {
                 console.log("received signal with: " + dayCompleted);
                 if (dayCompleted) {
-                    ScreenManager.goTo("ScreensQml/Main_Screen.qml");
+                    ScreenManager.goTo("Main_Screen");
                 } else {
                     ScreenManager.reload();
                 }
@@ -50,38 +71,180 @@ BaseScreen {
         }
     }
 
-    ListView {
-        id: dataList
+    MyRectangle {
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.topbar2.bottom
+
+        p_gradientEnabled: true
+        p_gradientColor1: Colors.primary
+        p_gradientColor2: Colors.secondary
+    }
+
+    // Column with the exercise data
+    Column {
+        id: exerciseDataView
+        z: 2
 
         anchors.top: basescreen.topbar2.bottom
         anchors.left: basescreen.leftbar.right
         anchors.right: basescreen.rightbar.left
-        anchors.bottom: basescreen.bottombar2.top
+        anchors.topMargin: 32
 
-        model: dataModel
+        Repeater {
+            model: exerciseModel
 
+            AppLabel {
+                required property var model
+                width: parent.width
+
+                p_text: model.text != "" ? model.text.replace(/\\n/g, "\n") : " "
+
+                p_textBold: model.isTitle
+                p_textSize: model.isTitle ? 20 : 16
+                p_textColor: model.isTitle ? "white" : Colors.dark
+                p_isLink: (model && model.isLink) ? model.isLink : false
+
+                p_rectangleColor: model.isTitle ? Colors.dark : "white"
+                p_gradientEnabled: model.isTitle
+
+                p_textMargins: model.isTitle ? 16 : 12
+
+                p_borderArray: (model && model.borderArray) ? JSON.parse(model.borderArray) : [1, 0, 1, 1]
+                p_radiusArray: (model && model.radiusArray) ? JSON.parse(model.radiusArray) : [0, 0, 0, 0]
+            }
+        }
+    }
+
+    // This rectangle hides the destruction of the list view elements and makes
+    // the dissapearence of them look smooth at the top
+    MyRectangle {
+        id: exerciseSpacer
+
+        z: 1
+        anchors.top: exerciseDataView.bottom
+        anchors.left: basescreen.leftbar.left
+        anchors.right: basescreen.rightbar.right
+        anchors.topMargin: -20
+
+        height: 56
+
+        p_gradientEnabled: true
+        p_gradient: LinearGradient {
+            x1: exerciseSpacer.width / 2
+            y1: 0
+            x2: exerciseSpacer.width / 2
+            y2: exerciseSpacer.height
+            GradientStop {
+                position: 0.75
+                color: Colors.light
+            }
+            GradientStop {
+                position: 1.0
+                color: "transparent"
+            }
+        }
+    }
+
+    ListView {
+        id: recordsDataView
+
+        anchors.top: exerciseDataView.bottom
+        anchors.left: basescreen.leftbar.right
+        anchors.right: basescreen.rightbar.left
+        anchors.bottom: basescreen.bottombar1.top
+
+        model: recordsModel
+
+        // Header to make the list view to render over the spacer that has the
+        // transparent gradient to make the dissapearing of the elements look
+        // smooth
+        header: Item {
+            height: 40
+        }
+
+        // Delegates that will manage the data obtained on the records of the
+        // exercise, each delgate has a self explanatory name, and the data is
+        // passed by the default model variable
         delegate: DelegateChooser {
-            role: "rowtype"
+            role: "rowType"
 
             DelegateChoice {
                 roleValue: "1Label"
-                Item {
-                    id: root0
+                AppLabel {
                     required property var model
 
-                    height: col1root0.implicitHeight
-                    width: ListView.view.width
-                    Layout.fillWidth: true
+                    width: recordsDataView.width
+
+                    // This is done because for some reason the data received from the
+                    // sqldatabase sends \\n instead of \n
+                    p_text: model.text.replace(/\\n/g, "\n")
+                    p_textMargins: 12
+                    p_textBold: model.isTitle
+                    p_textColor: model.isTitle ? "white" : Colors.dark
+
+                    p_rectangleColor: model.isTitle ? Colors.primary : "white"
+
+                    // This is done because for some reason sometimes this data  is sent
+                    // before the model is correctly set up so the binding makes sure
+                    // that model and arrays exist before assinging a value here
+                    p_borderArray: (model && model.borderArray) ? JSON.parse(model.borderArray) : [1, 0, 1, 1]
+                    p_radiusArray: (model && model.radiusArray) ? JSON.parse(model.radiusArray) : [0, 0, 0, 0]
+                }
+            }
+
+            DelegateChoice {
+                roleValue: "3Label"
+                RowLayout {
+                    id: label3
+                    required property var model
+                    width: recordsDataView.width
+                    spacing: 0
+
                     AppLabel {
-                        id: col1root0
-                        width: parent.width
+                        property var model: label3.model
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.fillHeight: true
 
-                        p_text: root0.model.col1text != "" ? root0.model.col1text : "Place Holder"
-                        p_textBold: root0.model.isBold
-                        p_textSize: root0.model.fontSize > 0 ? root0.model.fontSize : 16
+                        p_textMargins: 8
 
-                        p_borderArray: (root0.model && root0.model.borderArray) ? JSON.parse(root0.model.borderArray) : [1, 0, 1, 1]
-                        p_radiusArray: (root0.model && root0.model.radiusArray) ? JSON.parse(root0.model.radiusArray) : [0, 0, 0, 0]
+                        p_text: model.text1
+                        p_textColor: model.isTitle ? "white" : Colors.dark
+                        p_rectangleColor: model.isTitle ? Colors.primary : "white"
+                        p_textBold: model.isTitle
+                        p_borderArray: model.isEnd ? [1, 1, 1, 0] : [1, 0, 1, 0]
+                        p_radiusArray: model.isEnd ? [0, 0, 1, 0] : [0, 0, 0, 0]
+                    }
+                    AppLabel {
+                        property var model: label3.model
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.fillHeight: true
+
+                        p_textMargins: 8
+
+                        p_textBold: model.isTitle
+                        p_text: model.text2
+                        p_textColor: model.isTitle ? "white" : Colors.dark
+                        p_rectangleColor: model.isTitle ? Colors.primary : "white"
+                        p_borderArray: model.isEnd ? [1, 1, 1, 0] : [1, 0, 1, 0]
+                    }
+                    AppLabel {
+                        property var model: label3.model
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.fillHeight: true
+
+                        p_textMargins: 8
+
+                        p_textBold: model.isTitle
+                        p_text: model.text3
+                        p_textColor: model.isTitle ? "white" : Colors.dark
+                        p_rectangleColor: model.isTitle ? Colors.primary : "white"
+                        p_borderArray: model.isEnd ? [1, 1, 1, 1] : [1, 0, 1, 1]
+                        p_radiusArray: model.isEnd ? [0, 0, 0, 1] : [0, 0, 0, 0]
                     }
                 }
             }
@@ -89,195 +252,149 @@ BaseScreen {
             DelegateChoice {
                 roleValue: "Spacer"
                 Item {
-                    id: root1
-                    required property real rowHeight
-                    height: rowHeight
-                    width: ListView.view.width
-                    Layout.fillWidth: true
-                    MyRectangle {
-                        id: col1root1
-                        width: parent.width
-                        height: root1.rowHeight
-                        p_rectangleColor: Colors.light
-                    }
-                }
-            }
-
-            DelegateChoice {
-                roleValue: "3Label"
-                Item {
-                    id: root2
                     required property var model
-                    width: ListView.view.width
-                    height: Math.max(col1root2.implicitHeight, col2root2.implicitHeight, col3root2.implicitHeight)
-                    RowLayout {
-                        width: parent.width
-                        height: parent.height
-                        spacing: 0
-                        AppLabel {
-                            id: col1root2
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: 0
-                            Layout.fillHeight: true
-
-                            p_textMargins: 8
-
-                            p_text: root2.model.col1text != "" ? root2.model.col1text : "Place Holder"
-                            p_textBold: root2.model.isBold
-                            p_textSize: root2.model.fontSize > 0 ? root2.model.fontSize : 16
-
-                            p_borderArray: (root2.model && root2.model.borderArray1) ? JSON.parse(root2.model.borderArray1) : [1, 0, 1, 0]
-                            p_radiusArray: (root2.model && root2.model.radiusArray1) ? JSON.parse(root2.model.radiusArray1) : [0, 0, 0, 0]
-                        }
-
-                        AppLabel {
-                            id: col2root2
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: 0
-                            Layout.fillHeight: true
-                            p_textMargins: 8
-
-                            p_text: root2.model.col2text != "" ? root2.model.col2text : "Place Holder"
-                            p_textBold: root2.model.isBold
-                            p_textSize: root2.model.fontSize > 0 ? root2.model.fontSize : 16
-
-                            p_borderArray: (root2.model && root2.model.borderArray2) ? JSON.parse(root2.model.borderArray2) : [1, 0, 1, 0]
-                            p_radiusArray: (root2.model && root2.model.radiusArray2) ? JSON.parse(root2.model.radiusArray2) : [0, 0, 0, 0]
-                        }
-
-                        AppLabel {
-                            id: col3root2
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: 0
-                            Layout.fillHeight: true
-                            p_textMargins: 8
-
-                            p_text: root2.model.col3text != "" ? root2.model.col3text : "Place Holder"
-                            p_textBold: root2.model.isBold
-                            p_textSize: root2.model.fontSize > 0 ? root2.model.fontSize : 16
-
-                            p_borderArray: (root2.model && root2.model.borderArray3) ? JSON.parse(root2.model.borderArray3) : [1, 0, 1, 1]
-                            p_radiusArray: (root2.model && root2.model.radiusArray3) ? JSON.parse(root2.model.radiusArray3) : [0, 0, 0, 0]
-                        }
-                    }
+                    height: model.height
                 }
             }
+
             DelegateChoice {
-                roleValue: "2Fields1Label"
-                Item {
-                    id: root3
+                roleValue: "2Field1Label"
+                RowLayout {
+                    id: field2Label1
                     required property var model
                     required property int index
-                    width: ListView.view.width
-                    height: Math.max(col1root3.implicitHeight, col2root3.implicitHeight, col3root3.implicitHeight)
-                    RowLayout {
-                        width: parent.width
-                        spacing: 0
-
-                        AppTextField {
-                            id: col1root3
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: 0
-                            Layout.fillHeight: true
-                            p_textMargins: 8
-
-                            text: dataModel.get(root3.index).resistance ?? ""
-                            p_placeHolderText: "Add Resistance"
-
-                            onTextChanged: {
-                                dataModel.setProperty(root3.index, "resistance", text);
-                            }
-
-                            p_borderArray: (root3.model && root3.model.borderArray1) ? JSON.parse(root3.model.borderArray1) : [1, 0, 1, 0]
-                            p_radiusArray: (root3.model && root3.model.radiusArray1) ? JSON.parse(root3.model.radiusArray1) : [0, 0, 0, 0]
-                        }
-
-                        AppTextField {
-                            id: col2root3
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: 0
-                            Layout.fillHeight: true
-                            p_textMargins: 8
-
-                            text: dataModel.get(root3.index).reps ?? ""
-                            p_placeHolderText: "Add Reps"
-
-                            onTextChanged: {
-                                dataModel.setProperty(root3.index, "reps", text);
-                            }
-                            p_borderArray: (root3.model && root3.model.borderArray1) ? JSON.parse(root3.model.borderArray1) : [1, 0, 1, 0]
-                            p_radiusArray: (root3.model && root3.model.radiusArray1) ? JSON.parse(root3.model.radiusArray1) : [0, 0, 0, 0]
-                        }
-
-                        AppLabel {
-                            id: col3root3
-
-                            p_text: root3.model.col3text
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: 0
-                            Layout.fillHeight: true
-                            p_textMargins: 8
-
-                            p_borderArray: (root3.model && root3.model.borderArray1) ? JSON.parse(root3.model.borderArray1) : [1, 0, 1, 1]
-                            p_radiusArray: (root3.model && root3.model.radiusArray1) ? JSON.parse(root3.model.radiusArray1) : [0, 0, 0, 0]
-                        }
-                    }
-                }
-            }
-            DelegateChoice {
-                roleValue: "1Field"
-                Item {
-                    id: root4
-
-                    required property var model
-                    required property int index
-                    height: col1root4.implicitHeight
-                    width: ListView.view.width
+                    width: recordsDataView.width
+                    spacing: 0
 
                     AppTextField {
-                        id: col1root4
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                        property int index: field2Label1.index
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.fillHeight: true
 
-                        text: dataModel.get(root4.index).notes ?? ""
-                        p_placeHolderText: "Add Notes"
+                        p_textMargins: 8
+                        p_placeHolderText: "Add the resistance"
+                        // This is the best way that I have found to save the data from the
+                        // delegates even though the list is far away from them
+                        text: recordsModel.get(index).resistance ?? ""
 
                         onTextChanged: {
-                            dataModel.setProperty(root4.index, "notes", text);
+                            recordsModel.setProperty(index, "resistance", text);
                         }
 
-                        p_borderArray: (root4.model && root4.model.borderArray1) ? JSON.parse(root4.model.borderArray1) : [1, 1, 1, 1]
-                        p_radiusArray: (root4.model && root4.model.radiusArray1) ? JSON.parse(root4.model.radiusArray1) : [0, 0, 1, 1]
+                        p_textColor: Colors.dark
+                        p_rectangleColor: "white"
+                        p_borderArray: [1, 0, 1, 0]
                     }
+                    AppTextField {
+                        property int index: field2Label1.index
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.fillHeight: true
+
+                        p_textMargins: 8
+                        p_placeHolderText: "Add the reps"
+                        text: recordsModel.get(index).reps ?? ""
+
+                        onTextChanged: {
+                            recordsModel.setProperty(index, "reps", text);
+                        }
+
+                        p_textColor: Colors.dark
+                        p_rectangleColor: "white"
+                        p_borderArray: [1, 0, 1, 0]
+                    }
+                    AppLabel {
+                        property var model: field2Label1.model
+
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.fillHeight: true
+
+                        p_textMargins: 8
+
+                        p_text: model.text3
+                        p_textColor: Colors.dark
+                        p_rectangleColor: "white"
+                        p_borderArray: [1, 0, 1, 1]
+                    }
+                }
+            }
+
+            DelegateChoice {
+                roleValue: "1Field"
+                AppTextField {
+                    required property int index
+
+                    width: recordsDataView.width
+
+                    p_textMargins: 12
+                    p_placeHolderText: "Add your notes"
+                    text: recordsModel.get(index).notes ?? ""
+
+                    onTextChanged: {
+                        recordsModel.setProperty(index, "notes", text);
+                    }
+
+                    p_textColor: Colors.dark
+                    p_rectangleColor: "white"
+                    p_borderArray: [1, 1, 1, 1]
+                    p_radiusArray: [0, 0, 1, 1]
                 }
             }
 
             DelegateChoice {
                 roleValue: "1Button"
-                Item {
-                    id: root5
+                AppButton {
+                    width: recordsDataView.width
+                    p_text: "Complete Training"
 
-                    required property var model
-                    height: col1root5.implicitHeight
-                    width: ListView.view.width
-
-                    AppButton {
-                        id: col1root5
-                        p_text: root5.model.col1text
-                        width: parent.width
-                        onClicked: {
-                            if (basescreen.isPreview) {
-                                Logic.completePreview(dataModel, basescreen);
-                            } else {
-                                Logic.completeExercise(dataModel, basescreen, ThreadManager);
-                            }
+                    onClicked: {
+                        if (basescreen.isPreview) {
+                            console.log(Logic.collectInputs(recordsModel));
+                            ScreenManager.goTo("Main_Screen");
+                        } else {
+                            Logic.completeExercise(recordsModel, basescreen, ThreadManager);
                         }
                     }
                 }
             }
 
-            // space
+            // End of the DelegateChooser
+        }
 
+        footer: Item {
+            height: 40
+        }
+    }
+
+    // This rectangle hides the destruction of the list view elements and makes
+    // the dissapearence of them look smooth at the bottom
+    MyRectangle {
+        id: bottomSpacer
+
+        z: 1
+        anchors.top: basescreen.bottombar1.top
+        anchors.left: basescreen.left
+        anchors.right: basescreen.right
+        anchors.bottom: basescreen.bottombar1.bottom
+
+        anchors.topMargin: -20
+
+        p_gradientEnabled: true
+        p_gradient: LinearGradient {
+            x1: exerciseSpacer.width / 2
+            y1: exerciseSpacer.height
+            x2: exerciseSpacer.width / 2
+            y2: 0
+            GradientStop {
+                position: 0.75
+                color: Colors.light
+            }
+            GradientStop {
+                position: 1.0
+                color: "transparent"
+            }
         }
     }
 }

@@ -30,6 +30,7 @@ VALUES
 ('Wood Choops Máquinas', 4, 4, 'https://youtu.be/90Qh5XG6mqs', '[10 - 14]', NULL),
 ('Plancha Dinamica KB', 4, 5, 'https://youtu.be/odo0h50hfwY', '40 seg | 3 Rondas', NULL),
 ('Plancha Lateral en Banco', 4, 6, 'https://youtu.be/aDsaGBnvDQo', '30 Seg | 3 Rondas', NULL),
+('Dragon Flag',4,7,'https://youtu.be/pvz7k5gO-DE','[6 - 10]',NULL),
 -- Day 5
 ('Peso Muerto', 5, 1, 'https://youtu.be/7BdVi5qJ7E4', '[6 - 8]', NULL),
 ('Curl de Isquios en Máquina', 5, 2, 'https://youtu.be/6IvQvWZmEsw', '[12 - 15]', 'Maquina Hammer strength'),
@@ -69,6 +70,7 @@ VALUES
 (24,1,4),(24,2,5),(24,3,1),
 (25,1,7),
 (26,1,7),
+(32,1,2),(32,2,1),
 -- Day 5
 (27,1,4),(27,2,5),(27,3,6),
 (28,1,3),(28,2,2),(28,3,1),

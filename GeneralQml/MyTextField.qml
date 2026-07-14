@@ -35,7 +35,6 @@ MyRectangle {
     implicitHeight: (p_placeHolderActive ? placeHolderLoader.implicitHeight : textInput.implicitHeight) + (p_textMarginsV * 2) + root.borderMargin(0) + root.borderMargin(1)
     implicitWidth: (p_placeHolderActive ? placeHolderLoader.implicitWidth : textInput.implicitWidth) + (p_textMarginsH * 2) + root.borderMargin(2) + root.borderMargin(3)
 
-    /** Main text input field */
     TextInput {
         id: textInput
 

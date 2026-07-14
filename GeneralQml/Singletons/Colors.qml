@@ -7,7 +7,7 @@ import QtQuick
  */
 QtObject {
     /** Primary brand color */
-    property color primary: Qt.hsla(191 / 360, 0.84, 0.58, 1.0)
+    property color primary: Qt.hsla(191 / 360, 0.75, 0.60, 1.0)
 
     property color primarylight: Qt.hsla(191 / 360, 0.84, 0.75, 1.0)
 
@@ -31,7 +31,7 @@ QtObject {
     property color errordark: Qt.hsla(0 / 360, 0.40, 0.30, 1.0)
 
     /** Dark variant */
-    property color dark: Qt.hsla(191 / 360, 0.20, 0.30, 1.0)
+    property color dark: Qt.hsla(191 / 360, 0.20, 0.20, 1.0)
 
     /** Holder colors for temporary highlights */
     property color colorholder1: "#ff0000"

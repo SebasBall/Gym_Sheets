@@ -2,9 +2,9 @@ import QtQuick
 import QtQuick.Controls
 import "GeneralQml"
 
-ApplicationWindow {
-    width: 400
-    height: 892
+Window {
+    width: 390
+    height: 844
     visible: true
     title: "Gym_Sheets"
 
@@ -15,7 +15,9 @@ ApplicationWindow {
         active: true
         anchors.fill: parent
         focus: true
-        source: "ScreensQml/Exercise_Screen.qml"
-        Component.onCompleted: ScreenManager.setLoader(screenLoader)
+        source: "ScreensQml/Main_Screen.qml"
+        Component.onCompleted: {
+            ScreenManager.setLoader(screenLoader);
+        }
     }
 }

@@ -5,19 +5,21 @@ MyRectangle {
     id: root
 
     property string p_text: "Place Holder"
+    property bool p_isLink: false
     property real p_textMargins: 16
     property real p_textMarginsV: p_textMargins
     property real p_textMarginsH: p_textMargins
     property int p_textSize: 16
     property bool p_textBold: false
     property bool p_textItalic: false
-    property bool p_textUnderline: false
+    property bool p_textUnderline: p_isLink
     property string p_textFontName: "Roboto,Segoe UI,San Francisco,DejaVu Sans"
     property color p_textColor: "black"
     property int p_textAlign: Text.AlignLeft
     property bool p_showTextBorder: false
     property int p_textWrap: Text.Wrap
     property int p_textVerticalAlign: Text.AlignVCenter
+    property color p_linkColor: p_textColor
 
     height: text.implicitHeight + (p_textMarginsV * 2) + root.borderMargin(0) + root.borderMargin(1)
     width: text.implicitWidth + (p_textMarginsH * 2) + root.borderMargin(2) + root.borderMargin(3)
@@ -57,6 +59,12 @@ MyRectangle {
                 border.width: 2
                 color: "transparent"
             }
+        }
+    }
+
+    onClicked: {
+        if (p_isLink) {
+            Qt.openUrlExternally(text.text);
         }
     }
 }

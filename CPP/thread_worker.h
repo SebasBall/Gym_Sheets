@@ -77,7 +77,8 @@ signals:
   void addTask();
   void completeTask();
   void startedDay();
-  void gotExerciseData(const Exercise exercise, const QList<Record> records);
+  void gotExerciseData(Exercise exercise, QList<Record> records,
+                       QList<QString> routine);
   void completedExercise(bool dayCompleted);
 };
 
