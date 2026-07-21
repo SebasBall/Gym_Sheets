@@ -1,3 +1,11 @@
+/* LIST OF CONTENTS
+ * - // CLASS APPLIED MACROS | 2
+ * - // QML PROPERTIES | 3
+ * - // SIGNALS | 4
+ * - // PUBLIC METHODS | 5
+ * - // PRIVATE METHODS | 6
+ * - // PRIVATE MEMBERS | 7
+ * END OF CONTENTS */
 #ifndef THREAD_MANAGER_H
 #define THREAD_MANAGER_H
 
@@ -19,6 +27,7 @@ public:
   Q_INVOKABLE void startDay();
   Q_INVOKABLE void getExerciseData();
   Q_INVOKABLE void completeExercise(QVariantList records);
+  Q_INVOKABLE void getOnTraining();
 
 private:
   // Methods
@@ -38,6 +47,7 @@ signals:
   void gotExerciseData(Exercise exercise, QList<Record> records,
                        QList<QString> routine);
   void completedExercise(bool dayCompleted);
+  void gotOnTraining(bool onTraining);
 };
 
 #endif // THREAD_MANAGER_H

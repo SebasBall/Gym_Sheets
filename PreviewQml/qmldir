@@ -1,0 +1,3 @@
+module Preview
+singleton ThreadManager 1.0 ThreadManager.qml
+SvgIcon 1.0 SvgIcon.qml

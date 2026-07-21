@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import "../GeneralQml"
 import "../AppQml"
+// import "../PreviewQml"
 import "Exercise_Screen_Logic.js" as Logic
 
 BaseScreen {
@@ -12,9 +13,6 @@ BaseScreen {
     // Base screen configuration
     anchors.fill: parent
     loadRectangles: false
-    // This preview value is to test the screen with the QML Live Preview
-    // and avoid building the app any time that a change is made
-    property bool isPreview: Qt.application.arguments.indexOf("--qmlpreview") !== -1
 
     // Basic variables for list view operations
     property int actualTraining: 0
@@ -32,41 +30,29 @@ BaseScreen {
 
     // Load the rows data for the list view
     Component.onCompleted: {
-        if (isPreview) {
-            Logic.loadPreviewData(exerciseModel, recordsModel, basescreen);
-        } else {
-            ThreadManager.getExerciseData();
-        }
+        ThreadManager.getExerciseData();
     }
 
     // Connection to the signal from c++ to confirm that the data from the database
-    // was collected, it is on a loader to avoid issues on the logs when testing
-    // through the QML Live Preview
-    Loader {
-        active: !basescreen.isPreview
-        sourceComponent: Connections {
-            target: ThreadManager
-            function onGotExerciseData(exercise, records, routine) {
-                basescreen.routine = routine;
-                Logic.appendExerciseData(exercise, exerciseModel);
-                Logic.appendRecordsData(records, recordsModel, basescreen);
-            }
+    // was collected
+    Connections {
+        target: ThreadManager
+        function onGotExerciseData(exercise, records, routine) {
+            basescreen.routine = routine;
+            Logic.appendExerciseData(exercise, exerciseModel);
+            Logic.appendRecordsData(records, recordsModel, basescreen);
         }
     }
 
     // Connection to the signal from c++ that confirms that the exercise data has
     // been saved and confirms also if the routine of the day has been completed
-    Loader {
-        active: !basescreen.isPreview
-        sourceComponent: Connections {
-            target: ThreadManager
-            function onCompletedExercise(dayCompleted) {
-                console.log("received signal with: " + dayCompleted);
-                if (dayCompleted) {
-                    ScreenManager.goTo("Main_Screen");
-                } else {
-                    ScreenManager.reload();
-                }
+    Connections {
+        target: ThreadManager
+        function onCompletedExercise(dayCompleted) {
+            if (dayCompleted) {
+                ScreenManager.goTo("Main_Screen");
+            } else {
+                ScreenManager.reload();
             }
         }
     }
@@ -80,6 +66,24 @@ BaseScreen {
         p_gradientEnabled: true
         p_gradientColor1: Colors.primary
         p_gradientColor2: Colors.secondary
+    }
+
+    MouseArea {
+        anchors.top: basescreen.topbar2.top
+        anchors.bottom: basescreen.topbar2.bottom
+        anchors.left: basescreen.topbar2.left
+        width: height
+        SvgIcon {
+            source: ":/SVG/left-arrow.svg"
+            anchors.fill: parent
+            anchors.margins: 12
+
+            svgFillColor: Colors.dark
+        }
+
+        onClicked: {
+            ScreenManager.goTo("Main_Screen");
+        }
     }
 
     // Column with the exercise data
@@ -102,14 +106,14 @@ BaseScreen {
                 p_text: model.text != "" ? model.text.replace(/\\n/g, "\n") : " "
 
                 p_textBold: model.isTitle
-                p_textSize: model.isTitle ? 20 : 16
+                p_textSize: model.isTitle ? 20 : 14
                 p_textColor: model.isTitle ? "white" : Colors.dark
                 p_isLink: (model && model.isLink) ? model.isLink : false
 
                 p_rectangleColor: model.isTitle ? Colors.dark : "white"
                 p_gradientEnabled: model.isTitle
 
-                p_textMargins: model.isTitle ? 16 : 12
+                p_textMargins: model.isTitle ? 14 : 8
 
                 p_borderArray: (model && model.borderArray) ? JSON.parse(model.borderArray) : [1, 0, 1, 1]
                 p_radiusArray: (model && model.radiusArray) ? JSON.parse(model.radiusArray) : [0, 0, 0, 0]
@@ -171,6 +175,159 @@ BaseScreen {
             role: "rowType"
 
             DelegateChoice {
+                roleValue: "Training"
+
+                Column {
+                    id: recordColumn
+                    property bool detailsVisible: false
+                    required property var model
+                    width: recordsDataView.width
+
+                    AppLabel {
+                        width: parent.width
+                        property var model: recordColumn.model
+
+                        p_text: model.text
+                        p_textSize: 16
+                        p_textMargins: 12
+                        p_textBold: true
+                        p_textColor: "white"
+
+                        p_rectangleColor: Colors.primary
+
+                        p_borderArray: {
+                            if (model.isLast && !recordColumn.detailsVisible) {
+                                return [1, 1, 1, 1];
+                            } else {
+                                return [1, 0, 1, 1];
+                            }
+                        }
+                        p_radiusArray: {
+                            if (model.isFirst) {
+                                return [1, 1, 0, 0];
+                            } else if (model.isLast && !recordColumn.detailsVisible) {
+                                return [0, 0, 1, 1];
+                            } else {
+                                return [0, 0, 0, 0];
+                            }
+                        }
+
+                        onClicked: {
+                            recordColumn.detailsVisible = !recordColumn.detailsVisible;
+                        }
+                    }
+
+                    Column {
+                        visible: recordColumn.detailsVisible
+                        width: recordsDataView.width
+
+                        Repeater {
+                            model: recordColumn.model.recordModel
+                            RowLayout {
+                                id: recordRow
+                                required property var model
+                                width: recordsDataView.width
+                                spacing: 0
+
+                                AppLabel {
+                                    property var model: recordRow.model
+                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: 1
+                                    Layout.fillHeight: true
+
+                                    p_textMargins: 8
+
+                                    p_text: model.text1
+                                    p_textColor: model.isTitle ? "white" : Colors.dark
+                                    p_rectangleColor: model.isTitle ? Colors.primary : "white"
+                                    p_textBold: model.isTitle
+                                    p_borderArray: {
+                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                            return [1, 1, 1, 0];
+                                        } else {
+                                            return [1, 0, 1, 0];
+                                        }
+                                    }
+                                    p_radiusArray: {
+                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                            return [0, 0, 1, 0];
+                                        } else {
+                                            return [0, 0, 0, 0];
+                                        }
+                                    }
+                                }
+                                AppLabel {
+                                    property var model: recordRow.model
+                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: 1
+                                    Layout.fillHeight: true
+
+                                    p_textMargins: 8
+
+                                    p_textBold: model.isTitle
+                                    p_text: model.text2
+                                    p_textColor: model.isTitle ? "white" : Colors.dark
+                                    p_rectangleColor: model.isTitle ? Colors.primary : "white"
+                                    p_borderArray: {
+                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                            return [1, 1, 1, 0];
+                                        } else {
+                                            return [1, 0, 1, 0];
+                                        }
+                                    }
+                                }
+                                AppLabel {
+                                    property var model: recordRow.model
+                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: 1
+                                    Layout.fillHeight: true
+
+                                    p_textMargins: 8
+
+                                    p_textBold: model.isTitle
+                                    p_text: model.text3
+                                    p_textColor: model.isTitle ? "white" : Colors.dark
+                                    p_rectangleColor: model.isTitle ? Colors.primary : "white"
+                                    p_borderArray: {
+                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                            return [1, 1, 1, 1];
+                                        } else {
+                                            return [1, 0, 1, 1];
+                                        }
+                                    }
+                                    p_radiusArray: {
+                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                            return [0, 0, 0, 1];
+                                        } else {
+                                            return [0, 0, 0, 0];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Loader {
+                            active: recordColumn.model.notes.text != ""
+                            sourceComponent: AppLabel {
+                                property var model: recordColumn.model.notes
+
+                                width: recordsDataView.width
+
+                                // This is done because for some reason the data received from the
+                                // sqldatabase sends \\n instead of \n
+                                p_text: model.text.replace(/\\n/g, "\n")
+                                p_textSize: 14
+                                p_textMargins: 8
+                                p_textColor: Colors.dark
+                                p_rectangleColor: "white"
+
+                                p_borderArray: recordColumn.model.isLast ? [1, 1, 1, 1] : [1, 0, 1, 1]
+                                p_radiusArray: recordColumn.model.isLast ? [0, 0, 1, 1] : [0, 0, 0, 0]
+                            }
+                        }
+                    }
+                }
+            }
+            DelegateChoice {
                 roleValue: "1Label"
                 AppLabel {
                     required property var model
@@ -180,72 +337,15 @@ BaseScreen {
                     // This is done because for some reason the data received from the
                     // sqldatabase sends \\n instead of \n
                     p_text: model.text.replace(/\\n/g, "\n")
-                    p_textMargins: 12
+                    p_textSize: model.isTitle ? 16 : 14
+                    p_textMargins: model.isTitle ? 12 : 8
                     p_textBold: model.isTitle
                     p_textColor: model.isTitle ? "white" : Colors.dark
 
                     p_rectangleColor: model.isTitle ? Colors.primary : "white"
 
-                    // This is done because for some reason sometimes this data  is sent
-                    // before the model is correctly set up so the binding makes sure
-                    // that model and arrays exist before assinging a value here
-                    p_borderArray: (model && model.borderArray) ? JSON.parse(model.borderArray) : [1, 0, 1, 1]
-                    p_radiusArray: (model && model.radiusArray) ? JSON.parse(model.radiusArray) : [0, 0, 0, 0]
-                }
-            }
-
-            DelegateChoice {
-                roleValue: "3Label"
-                RowLayout {
-                    id: label3
-                    required property var model
-                    width: recordsDataView.width
-                    spacing: 0
-
-                    AppLabel {
-                        property var model: label3.model
-                        Layout.fillWidth: true
-                        Layout.preferredWidth: 1
-                        Layout.fillHeight: true
-
-                        p_textMargins: 8
-
-                        p_text: model.text1
-                        p_textColor: model.isTitle ? "white" : Colors.dark
-                        p_rectangleColor: model.isTitle ? Colors.primary : "white"
-                        p_textBold: model.isTitle
-                        p_borderArray: model.isEnd ? [1, 1, 1, 0] : [1, 0, 1, 0]
-                        p_radiusArray: model.isEnd ? [0, 0, 1, 0] : [0, 0, 0, 0]
-                    }
-                    AppLabel {
-                        property var model: label3.model
-                        Layout.fillWidth: true
-                        Layout.preferredWidth: 1
-                        Layout.fillHeight: true
-
-                        p_textMargins: 8
-
-                        p_textBold: model.isTitle
-                        p_text: model.text2
-                        p_textColor: model.isTitle ? "white" : Colors.dark
-                        p_rectangleColor: model.isTitle ? Colors.primary : "white"
-                        p_borderArray: model.isEnd ? [1, 1, 1, 0] : [1, 0, 1, 0]
-                    }
-                    AppLabel {
-                        property var model: label3.model
-                        Layout.fillWidth: true
-                        Layout.preferredWidth: 1
-                        Layout.fillHeight: true
-
-                        p_textMargins: 8
-
-                        p_textBold: model.isTitle
-                        p_text: model.text3
-                        p_textColor: model.isTitle ? "white" : Colors.dark
-                        p_rectangleColor: model.isTitle ? Colors.primary : "white"
-                        p_borderArray: model.isEnd ? [1, 1, 1, 1] : [1, 0, 1, 1]
-                        p_radiusArray: model.isEnd ? [0, 0, 0, 1] : [0, 0, 0, 0]
-                    }
+                    p_borderArray: [1, 0, 1, 1]
+                    p_radiusArray: [1, 1, 0, 0]
                 }
             }
 
@@ -330,10 +430,10 @@ BaseScreen {
 
                     p_textMargins: 12
                     p_placeHolderText: "Add your notes"
-                    text: recordsModel.get(index).notes ?? ""
+                    text: recordsModel.get(index).todayNotes ?? ""
 
                     onTextChanged: {
-                        recordsModel.setProperty(index, "notes", text);
+                        recordsModel.setProperty(index, "todayNotes", text);
                     }
 
                     p_textColor: Colors.dark
@@ -350,12 +450,7 @@ BaseScreen {
                     p_text: "Complete Training"
 
                     onClicked: {
-                        if (basescreen.isPreview) {
-                            console.log(Logic.collectInputs(recordsModel));
-                            ScreenManager.goTo("Main_Screen");
-                        } else {
-                            Logic.completeExercise(recordsModel, basescreen, ThreadManager);
-                        }
+                        Logic.completeExercise(recordsModel, basescreen, ThreadManager);
                     }
                 }
             }

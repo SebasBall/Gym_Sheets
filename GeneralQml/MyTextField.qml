@@ -27,8 +27,6 @@ MyRectangle {
     property int p_textVerticalAlign: Text.AlignVCenter
     property bool p_placeHolderActive: textInput.text === "" && !textInput.activeFocus && root.p_placeHolderText != ""
 
-    signal focused
-
     height: (p_placeHolderActive ? placeHolderLoader.implicitHeight : textInput.implicitHeight) + (p_textMarginsV * 2) + root.borderMargin(0) + root.borderMargin(1)
     width: (p_placeHolderActive ? placeHolderLoader.implicitWidth : textInput.implicitWidth) + (p_textMarginsH * 2) + root.borderMargin(2) + root.borderMargin(3)
 
@@ -38,7 +36,7 @@ MyRectangle {
     TextInput {
         id: textInput
 
-        z: 2
+        z: 4
         anchors.fill: parent
         anchors.topMargin: root.p_textMarginsV + root.borderMargin(0)
         anchors.bottomMargin: root.p_textMarginsV + root.borderMargin(1)
@@ -95,10 +93,6 @@ MyRectangle {
                 color: "transparent"
             }
         }
-    }
-
-    onClicked: {
-        textInput.forceActiveFocus();
     }
 
     /** Validator: disallow all spaces */

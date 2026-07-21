@@ -1,2 +1,4 @@
 module ScreensQml
+import Gym_Sheets 1.0
 Exercise_Screen 1.0 Exercise_Screen.qml
+Main_Screen 1.0 Main_Screen.qml

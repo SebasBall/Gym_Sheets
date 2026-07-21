@@ -7,7 +7,7 @@ MyTextField {
     p_textAlign: Text.AlignHCenter
 
     p_textBold: false
-    p_textSize: 16
+    p_textSize: 14
 
     p_borderSize: 4
     p_radius: 10

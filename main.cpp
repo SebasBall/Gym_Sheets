@@ -1,9 +1,9 @@
+/* LIST OF CONTENTS
+ * END OF CONTENTS */
+
 #include "thread_manager.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <cstdio>
-#include <qlogging.h>
-#include <qobject.h>
 
 void colorMessageHandler(QtMsgType type, const QMessageLogContext &,
                          const QString &msg) {
@@ -30,8 +30,6 @@ void colorMessageHandler(QtMsgType type, const QMessageLogContext &,
 
 int main(int argc, char *argv[]) {
   qInstallMessageHandler(colorMessageHandler);
-  //  qRegisterMetaType<Exercise>("Exercise");
-  //  qRegisterMetaType<QList<Record>>("QList<Record>");
 
   QCoreApplication::setOrganizationName("SebApps");
   QCoreApplication::setApplicationName("Gym_Sheets");

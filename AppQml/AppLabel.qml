@@ -7,7 +7,7 @@ MyLabel {
 
     p_text: "Place Holder"
     p_textBold: false
-    p_textSize: 16
+    p_textSize: 14
     p_textColor: Colors.dark
 
     p_borderSize: 4

@@ -1,3 +1,13 @@
+/* LIST OF CONTENTS
+* - (QObject *) ThreadManager::ThreadManager | 16 - 47 | 15
+* - nil ThreadManager::~ThreadManager | 49 - 63 | 15
+* - void () ThreadManager::threadCountUpdate | 65 - 78 | 20
+* - void (int) ThreadManager::startDbConnection | 80 - 90 | 20
+* - void () ThreadManager::startDay | 92 - 96 | 20
+* - void () ThreadManager::getExerciseData | 98 - 102 | 20
+* - void (QVariantList) ThreadManager::completeExercise | 104 - 121 | 20
+* - void () ThreadManager::getOnTraining | 123 - 127 | 20
+* END OF CONTENTS */
 #include "thread_manager.h"
 #include "CPP/thread_worker.h"
 #include <qeventloop.h>
@@ -30,6 +40,8 @@ ThreadManager::ThreadManager(QObject *parent) : QObject{parent} {
             &ThreadManager::startedDay);
     connect(newWorker, &ThreadWorker::completedExercise, this,
             &ThreadManager::completedExercise);
+    connect(newWorker, &ThreadWorker::gotOnTraining, this,
+            &ThreadManager::gotOnTraining);
   }
 
   startDbConnection(m_threadCounter);
@@ -79,19 +91,19 @@ void ThreadManager::startDbConnection(int workerId) {
 }
 
 void ThreadManager::startDay() {
-  qDebug() << "Started start day";
+  qDebug() << "Thread Manager: Sent start day request";
   threadCountUpdate();
   QMetaObject::invokeMethod(m_workersList[m_threadCounter], "startDay");
 }
 
 void ThreadManager::getExerciseData() {
-  qDebug() << "Started getting the exercise data";
+  qDebug() << "Thread Manager: Sent get exercise data request";
   threadCountUpdate();
   QMetaObject::invokeMethod(m_workersList[m_threadCounter], "getExerciseData");
 }
 
 void ThreadManager::completeExercise(QVariantList records) {
-  qDebug() << "Started setting records";
+  qDebug() << "Thread Manager: Sent get records data request";
   threadCountUpdate();
   QList<Record> recordsList;
 
@@ -107,4 +119,10 @@ void ThreadManager::completeExercise(QVariantList records) {
 
   QMetaObject::invokeMethod(m_workersList[m_threadCounter], "completeExercise",
                             Q_ARG(QList<Record>, recordsList));
+}
+
+void ThreadManager::getOnTraining() {
+  qDebug() << "Thread Manager: Sent get on training request";
+  threadCountUpdate();
+  QMetaObject::invokeMethod(m_workersList[m_threadCounter], "getOnTraining");
 }

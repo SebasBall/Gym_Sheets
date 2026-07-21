@@ -1,3 +1,14 @@
+/* LIST OF CONTENTS
+ * - (int, QObject *) ThreadWorker::ThreadWorker | 19 - 25 | 14
+ * - nil ThreadWorker::~ThreadWorker | 27 - 29 | 14
+ * - void () ThreadWorker::startDbConnection | 31 - 70 | 19
+ * - QString (QString, QString) ThreadWorker::callQuery | 72 - 94 | 22
+ * - void () ThreadWorker::startDay | 96 - 118 | 19
+ * - void () ThreadWorker::getExerciseData | 120 - 195 | 19
+ * - void (QList<Record>) ThreadWorker::completeExercise | 197 - 268 | 19
+ * - void () ThreadWorker::getOnTraining | 270 - 296 | 19
+ * END OF CONTENTS */
+
 #include "thread_worker.h"
 #include <qfiledevice.h>
 #include <qhashfunctions.h>
@@ -254,5 +265,33 @@ void ThreadWorker::completeExercise(QList<Record> records) {
   }
 
   emit completedExercise(dayCompleted);
+  emit completeTask();
+}
+
+void ThreadWorker::getOnTraining() {
+  emit addTask();
+
+  QSqlDatabase db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  QString rawQuery;
+  bool onTraining;
+
+  rawQuery = callQuery(":SQL/User.sql", "getOnTraining");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    while (query.next()) {
+      onTraining = query.value(0).toBool();
+      qInfo() << "Successfully got on training status";
+    }
+  } else {
+    qWarning() << "The query didn't got any value" << query.lastError().text();
+  }
+  emit gotOnTraining(onTraining);
+
   emit completeTask();
 }

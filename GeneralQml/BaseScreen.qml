@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 
 /**
@@ -20,6 +21,13 @@ Item {
     /** Controls whether the bar rectangles are loaded */
     property bool loadRectangles: true
 
+    // Check if preview
+    property bool isPreview: Qt.application.arguments.indexOf("--qmlpreview") !== -1
+
+    readonly property var inputMethod: Qt.inputMethod
+    readonly property bool keyboardVisible: inputMethod.visible
+    readonly property real keyboardHeight: inputMethod.visible ? inputMethod.keyboardRectangle.height / Screen.devicePixelRatio : 0
+
     /** Left vertical bar, 32px wide */
     Item {
         id: leftbar
@@ -30,10 +38,10 @@ Item {
 
         Loader {
             anchors.fill: parent
-            active: loadRectangles
+            active: root.loadRectangles
             sourceComponent: Rectangle {
                 anchors.fill: parent
-                color: color1
+                color: root.color1
             }
         }
     }
@@ -48,10 +56,10 @@ Item {
 
         Loader {
             anchors.fill: parent
-            active: loadRectangles
+            active: root.loadRectangles
             sourceComponent: Rectangle {
                 anchors.fill: parent
-                color: color1
+                color: root.color1
             }
         }
     }
@@ -66,10 +74,10 @@ Item {
 
         Loader {
             anchors.fill: parent
-            active: loadRectangles
+            active: root.loadRectangles
             sourceComponent: Rectangle {
                 anchors.fill: parent
-                color: color1
+                color: root.color1
             }
         }
     }
@@ -80,14 +88,14 @@ Item {
         anchors.top: topbar1.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 60
+        height: 48
 
         Loader {
             anchors.fill: parent
-            active: loadRectangles
+            active: root.loadRectangles
             sourceComponent: Rectangle {
                 anchors.fill: parent
-                color: color2
+                color: root.color2
             }
         }
     }
@@ -100,22 +108,21 @@ Item {
         anchors.right: parent.right
         height: 22
 
-
-        anchors.bottomMargin: Qt.inputMethod.visible ?
-                                  Qt.inputMethod.keyboardRectangle.height/Screen.devicePixelRatio
-                                  :
-                                  0
+        anchors.bottomMargin: root.keyboardHeight
 
         Behavior on anchors.bottomMargin {
-                NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.InOutQuad
             }
+        }
 
         Loader {
             anchors.fill: parent
-            active: loadRectangles
+            active: root.loadRectangles
             sourceComponent: Rectangle {
                 anchors.fill: parent
-                color: color1
+                color: root.color1
             }
         }
     }
@@ -130,10 +137,10 @@ Item {
 
         Loader {
             anchors.fill: parent
-            active: loadRectangles
+            active: root.loadRectangles
             sourceComponent: Rectangle {
                 anchors.fill: parent
-                color: color2
+                color: root.color2
             }
         }
     }
@@ -144,7 +151,7 @@ Item {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            root.forceActiveFocus()
+            root.forceActiveFocus();
         }
     }
 

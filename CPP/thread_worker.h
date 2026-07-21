@@ -1,3 +1,12 @@
+/* LIST OF CONTENTS
+ * - // CLASS APPLIED MACROS | 2
+ * - // QML PROPERTIES | 3
+ * - // SIGNALS | 4
+ * - // PUBLIC METHODS | 5
+ * - // PRIVATE METHODS | 6
+ * - // PRIVATE MEMBERS | 7
+ * END OF CONTENTS */
+
 #ifndef THREAD_WORKER_H
 #define THREAD_WORKER_H
 
@@ -52,6 +61,7 @@ public slots:
   void startDay();
   void getExerciseData();
   void completeExercise(const QList<Record> records);
+  void getOnTraining();
 
 private:
   int m_currentTasks = 0;
@@ -80,6 +90,7 @@ signals:
   void gotExerciseData(Exercise exercise, QList<Record> records,
                        QList<QString> routine);
   void completedExercise(bool dayCompleted);
+  void gotOnTraining(bool onTraining);
 };
 
 #endif // THREAD_WORKER_H

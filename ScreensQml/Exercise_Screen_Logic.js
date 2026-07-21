@@ -15,20 +15,151 @@ function appendExerciseData(exercise, exerciseModel) {
 		text: exercise.video,
 		isLink: true
 	});
-	exerciseModel.append({
-		text: exercise.guide
+	if (exercise.notes == "") {
+		exerciseModel.append({
+			text: exercise.guide,
+			borderArray: JSON.stringify([1, 1, 1, 1]),
+			radiusArray: JSON.stringify([0, 0, 1, 1])
+		});
+	} else {
+		exerciseModel.append({
+			text: exercise.guide,
+		});
+		exerciseModel.append({
+			text: exercise.notes,
+			borderArray: JSON.stringify([1, 1, 1, 1]),
+			radiusArray: JSON.stringify([0, 0, 1, 1])
+		});
+	}
+}
+
+function appendRecordsData(records, recordsModel, basescreen) {
+	var training = 1;
+	var trainingModel = {}
+	trainingModel.recordModel = []
+	trainingModel.notes = {}
+	trainingModel.notes.text = ""
+	trainingModel.isFirst = true
+
+	for (var i = 0; i < records.length; i++) {
+		if (training != records[i].training) {
+			trainingModel.rowType = "Training";
+			trainingModel.text = "Training " + training
+			trainingModel.recordModel.unshift({
+				text1: "Resistance",
+				text2: "Reps",
+				text3: "Effort",
+				isTitle: true,
+				isEnd: false
+			})
+			recordsModel.append(trainingModel);
+			training = records[i].training
+			trainingModel = {}
+			trainingModel.recordModel = []
+			trainingModel.notes = {}
+			trainingModel.notes.text = ""
+		}
+		trainingModel.recordModel.push({
+			text1: records[i].resistance,
+			text2: records[i].reps,
+			text3: records[i].effort
+		})
+		trainingModel.notes.text += records[i].notes
+		if (i + 1 == records.length) {
+			trainingModel.recordModel[trainingModel.recordModel.length - 1].isEnd = true;
+			trainingModel.rowType = "Training";
+			trainingModel.text = "Training " + training
+			trainingModel.isLast = true
+			trainingModel.recordModel.unshift({
+				text1: "Resistance",
+				text2: "Reps",
+				text3: "Effort",
+				isTitle: true,
+				isEnd: false
+			})
+			recordsModel.append(trainingModel);
+		}
+	}
+
+	// Spacer between the today training and the complete training
+	// button
+	recordsModel.append({
+		rowType: "Spacer",
+		height: 40
 	});
-	exerciseModel.append({
-		text: exercise.notes,
-		borderArray: JSON.stringify([1, 1, 1, 1]),
-		radiusArray: JSON.stringify([0, 0, 1, 1])
+
+	// Title of today training
+	recordsModel.append({
+		rowType: "1Label",
+		text: "Today Training",
+		isTitle: true,
 	});
+
+	// Loop with the efforts of this training
+	for (i = 0; i < basescreen.routine.length; i++) {
+		recordsModel.append({
+			rowType: "2Field1Label",
+			text3: basescreen.routine[i]
+		})
+	}
+
+	// Add the notes text field
+	recordsModel.append({
+		rowType: "1Field"
+	});
+
+	// Spacer between the today training and the complete training
+	// button
+	recordsModel.append({
+		rowType: "Spacer",
+		height: 40
+	});
+
+	recordsModel.append({
+		rowType: "1Button"
+	});
+
+	// Save what is the actual training
+	basescreen.actualTraining = training + 1
+
 }
 
 // The name explains what the function does pretty much
-function appendRecordsData(records, recordsModel, basescreen) {
-	var training = 0;
+function appendRecordsDatadep(records, recordsModel, basescreen) {
+	var training = 1;
 	var notes = "";
+	var recordModel = {}
+	var trainingModel = {
+		rowType: "Record",
+
+		text: "Training " + training,
+		isLast: false,
+
+		recordModel: [
+			{ text1: "Resistance", text2: "Reps", text3: "Effort", isTitle: false, isEnd: false },
+			{ text1: "Set 1", text2: "50kg", text3: "10 reps", isTitle: false, isEnd: false },
+			{ text1: "Set 2", text2: "55kg", text3: "8 reps", isTitle: false, isEnd: false },
+			{ text1: "Set 3", text2: "60kg", text3: "6 reps", isTitle: false, isEnd: false }
+		],
+
+		notes: {
+			text: "Notes",
+			borderArray: JSON.stringify([1, 1, 1, 1]),
+			radiusArray: JSON.stringify([0, 0, 1, 1])
+		}
+	};
+
+	for (var i = 0; i < records.length; i++) {
+		if (training != records[i].training) {
+			trainingModel.push({
+				rowType: "Record",
+				text: "Training " + training,
+			});
+			recordsModel.append(trainingModel);
+		}
+	}
+
+
 
 	// Loop to go around all the records
 	for (var i = 0; i < records.length; i++) {
@@ -36,6 +167,8 @@ function appendRecordsData(records, recordsModel, basescreen) {
 		// |If| to break on the training changes (1 to 2, 2 to 3, ...)
 		if (training != records[i].training) {
 			training = records[i].training;
+
+			records.Model.append({})
 
 			// Add the notes of the previous training
 			if (notes != "") {
@@ -110,40 +243,7 @@ function appendRecordsData(records, recordsModel, basescreen) {
 		height: 40
 	});
 
-	// Title of today training
-	recordsModel.append({
-		rowType: "1Label",
-		text: "Today Training",
-		isTitle: true,
-		radiusArray: JSON.stringify([1, 1, 0, 0])
-	});
 
-	// Loop with the efforts of this training
-	for (i = 0; i < basescreen.routine.length; i++) {
-		recordsModel.append({
-			rowType: "2Field1Label",
-			text3: basescreen.routine[i]
-		})
-	}
-
-	// Add the notes text field
-	recordsModel.append({
-		rowType: "1Field"
-	});
-
-	// Spacer between the today training and the complete training
-	// button
-	recordsModel.append({
-		rowType: "Spacer",
-		height: 40
-	});
-
-	recordsModel.append({
-		rowType: "1Button"
-	});
-
-	// Save what is the actual training
-	basescreen.actualTraining = training + 1
 }
 
 
@@ -154,7 +254,7 @@ function collectInputs(recordsModel) {
 		if (item.rowType === "2Field1Label") {
 			results.push(item.resistance, item.reps);
 		} else if (item.rowType === "1Field") {
-			results.push(item.notes);
+			results.push(item.todayNotes);
 		}
 	}
 	return results;
@@ -176,66 +276,4 @@ function completeExercise(recordsModel, basescreen, ThreadManager) {
 		records.push(record);
 	}
 	ThreadManager.completeExercise(records);
-}
-
-function loadPreviewData(exerciseModel, recordsModel, basescreen) {
-	basescreen.routine = ["RIR 2", "RIR 1", "FALLO"];
-
-	var exercise = {
-		id: 1,
-		name: "Press Inclinado con Mancuernas",
-		video: "https://youtu.be/J_x6MEFk3DM",
-		guide: "[6 - 8]",
-		notes: "Asiento nivel 6 \\n Test segunda linea"
-	};
-
-	appendExerciseData(exercise, exerciseModel);
-
-	var records = [
-		{ training: 1, resistance: "20kg", reps: "7", effort: "RIR 2", notes: "" },
-		{ training: 1, resistance: "20kg", reps: "8", effort: "RIR 1", notes: "" },
-		{ training: 1, resistance: "22.5kg", reps: "8 RP x (1 parcial)", effort: "FALLO", notes: "" },
-
-		{ training: 2, resistance: "22.5kg", reps: "6", effort: "RIR 2", notes: "" },
-		{ training: 2, resistance: "22.5kg", reps: "7", effort: "RIR 1", notes: "" },
-		{ training: 2, resistance: "25kg", reps: "4", effort: "FALLO", notes: "" },
-
-		{ training: 3, resistance: "22.5kg", reps: "7", effort: "RIR 2", notes: "" },
-		{ training: 3, resistance: "22.5kg", reps: "7 (1 parcial)", effort: "RIR 1", notes: "" },
-		{
-			training: 3, resistance: "20kg", reps: "7 RP x 4 RP x 3", effort: "FALLO",
-			notes: "No se porque pero hoy no pude con 25 Kg y las de 22.5 estaban cogidas entonces me tocó con las de 20kg"
-		},
-
-		{ training: 4, resistance: "20kg", reps: "8", effort: "RIR 2", notes: "" },
-		{ training: 4, resistance: "22.5kg", reps: "6", effort: "RIR 1", notes: "" },
-		{
-			training: 4, resistance: "22.5kg", reps: "8", effort: "FALLO",
-			notes: "No pude hacer RP, cuando me intenté volver a poner las mancuernas no pude mantenerlas"
-		},
-
-		{ training: 5, resistance: "22.5kg", reps: "6", effort: "RIR 2", notes: "" },
-		{ training: 5, resistance: "22.5kg", reps: "7", effort: "RIR 1", notes: "" },
-		{ training: 5, resistance: "25kg", reps: "4", effort: "FALLO", notes: "" }
-	];
-
-	appendRecordsData(records, recordsModel, basescreen);
-}
-
-function completePreview(dataModel, basescreen) {
-	var inputs = collectInputs(dataModel);
-	var records = [];
-	for (var i = 0; i < basescreen.rutine.length; i++) {
-		var record = [];
-		record.push(inputs[i * 2]);
-		record.push(inputs[i * 2 + 1]);
-		if (i + 1 === basescreen.rutine.length) {
-			record.push(inputs[inputs.length - 1]);
-		} else {
-			record.push("");
-		}
-		record.push(basescreen.actualTraining);
-		records.push(record);
-	}
-	console.log(records);
 }

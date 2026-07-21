@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Qml Sql)
+find_package(Qt6 REQUIRED COMPONENTS Quick Qml Sql Xml Svg)
 qt_standard_project_setup()
 
 qt_policy(SET QTP0001 NEW)
@@ -20,8 +20,8 @@ file(GLOB_RECURSE CPP_Files
 	"CPP/*.c"
 )
 
-qt_add_executable(Gym_Sheets main.cpp ${CPP_Files})
-target_include_directories(Gym_Sheets PRIVATE CPP)
+qt_add_executable(${PROJECT_NAME} main.cpp)
+target_include_directories(${PROJECT_NAME} PRIVATE CPP)
 
 file(GLOB_RECURSE QML_Singletons
 	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -42,7 +42,7 @@ file(GLOB_RECURSE QML_Files
 	"ScreensQml/*.js"
 )
 
-qt_add_qml_module(Gym_Sheets
+qt_add_qml_module(${PROJECT_NAME}
     URI Gym_Sheets
     VERSION 1.0
     QML_FILES
@@ -57,25 +57,25 @@ file(GLOB_RECURSE SQL_Files
 	"SQL/*.sql"
 )
 
-qt_add_resources(Gym_Sheets "SQL"
+qt_add_resources(${PROJECT_NAME} "SQL"
 	PREFIX "SQL"
 	BASE "SQL"
 	FILES ${SQL_Files}
 )
 
-qt_add_resources(Gym_Sheets "Fonts"
+qt_add_resources(${PROJECT_NAME} "Fonts"
     PREFIX "/Fonts"
     BASE "Fonts"
     FILES Fonts/Lexend-VariableFont_wght.ttf
 )
 
-file(GLOB_RECURSE SQL_Files
+file(GLOB_RECURSE SVG_Files
 	RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 	"SVG/*.svg"
 )
-qt_add_resources(Gym_Sheets "SVG"
+qt_add_resources(${PROJECT_NAME} "SVG"
 	PREFIX "/SVG"
-	BASE "Fonts"
+	BASE "SVG"
 	FILES ${SVG_Files}
 )
 
@@ -83,4 +83,4 @@ set_target_properties(Gym_Sheets PROPERTIES
     QT_ANDROID_PACKAGE_NAME "com.sebapps.gymsheets"
     QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
 
-target_link_libraries(Gym_Sheets PRIVATE Qt6::Quick Qt6::Sql)
+target_link_libraries(Gym_Sheets PRIVATE Qt6::Quick Qt6::Sql Qt6::Xml Qt6::Svg)

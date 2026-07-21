@@ -166,7 +166,9 @@ Item {
         hoverEnabled: true
 
         onClicked: {
-            root.forceActiveFocus();
+            var item = Window.activeFocusItem;
+            if (item)
+                item.focus = false;
             root.clicked();
         }
         onPressed: {

@@ -61,9 +61,10 @@ CREATE TABLE User (
 	Id INT PRIMARY KEY CHECK (Id = 1),
 	CurrentDay INT NOT NULL,
 	CurrentExercise INT NOT NULL,
-	NumExercisesToday INT NOT NULL
+	NumExercisesToday INT NOT NULL,
+	OnTraining BOOLEAN NOT NULL
 );
 
-INSERT INTO User (Id, CurrentDay, CurrentExercise, NumExercisesToday)
+INSERT INTO User (Id, CurrentDay, CurrentExercise, NumExercisesToday, OnTraining)
 VALUES
-(1,1,1,1);
+(1,1,1,1,false);
