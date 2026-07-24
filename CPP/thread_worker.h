@@ -62,6 +62,8 @@ public slots:
   void getExerciseData();
   void completeExercise(const QList<Record> records);
   void getOnTraining();
+  void getTodayRecords();
+  void completeTraining();
 
 private:
   int m_currentTasks = 0;
@@ -91,6 +93,8 @@ signals:
                        QList<QString> routine);
   void completedExercise(bool dayCompleted);
   void gotOnTraining(bool onTraining);
+  void gotTodayRecords(QVariantList todayData);
+  void completedTraining();
 };
 
 #endif // THREAD_WORKER_H

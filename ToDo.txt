@@ -1,0 +1,3 @@
+- Create a function on the thread_manager.cpp to receive the data from the current day table and send it to qml through one signal that is sent multiple times, the structure will be [exercisetitle,records]
+
+- 

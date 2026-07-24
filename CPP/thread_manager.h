@@ -28,6 +28,8 @@ public:
   Q_INVOKABLE void getExerciseData();
   Q_INVOKABLE void completeExercise(QVariantList records);
   Q_INVOKABLE void getOnTraining();
+  Q_INVOKABLE void getTodayRecords();
+  Q_INVOKABLE void completeTraining();
 
 private:
   // Methods
@@ -48,6 +50,8 @@ signals:
                        QList<QString> routine);
   void completedExercise(bool dayCompleted);
   void gotOnTraining(bool onTraining);
+  void gotTodayRecords(QVariantList todayData);
+  void completedTraining();
 };
 
 #endif // THREAD_MANAGER_H

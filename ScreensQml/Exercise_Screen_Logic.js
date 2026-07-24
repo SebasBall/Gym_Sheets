@@ -37,8 +37,7 @@ function appendRecordsData(records, recordsModel, basescreen) {
 	var training = 1;
 	var trainingModel = {}
 	trainingModel.recordModel = []
-	trainingModel.notes = {}
-	trainingModel.notes.text = ""
+	trainingModel.notes = ""
 	trainingModel.isFirst = true
 
 	for (var i = 0; i < records.length; i++) {
@@ -56,15 +55,18 @@ function appendRecordsData(records, recordsModel, basescreen) {
 			training = records[i].training
 			trainingModel = {}
 			trainingModel.recordModel = []
-			trainingModel.notes = {}
-			trainingModel.notes.text = ""
+			trainingModel.notes = ""
 		}
 		trainingModel.recordModel.push({
 			text1: records[i].resistance,
 			text2: records[i].reps,
 			text3: records[i].effort
 		})
-		trainingModel.notes.text += records[i].notes
+		if (records[i].notes != "" && trainingModel.notes != "") {
+			trainingModel.notes += "\n" + records[i].notes
+		} else {
+			trainingModel.notes += records[i].notes
+		}
 		if (i + 1 == records.length) {
 			trainingModel.recordModel[trainingModel.recordModel.length - 1].isEnd = true;
 			trainingModel.rowType = "Training";

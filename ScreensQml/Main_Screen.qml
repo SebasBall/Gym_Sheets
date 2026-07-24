@@ -17,7 +17,6 @@ BaseScreen {
     Connections {
         target: ThreadManager
         function onGotOnTraining(onTraining) {
-            console.log("Received: " + onTraining);
             basescreen.onTraining = onTraining;
         }
     }
@@ -82,13 +81,13 @@ BaseScreen {
         AppButton {
             width: parent.width
 
-            p_text: basescreen.onTraining ? "Start Day" : "Continue Day"
+            p_text: basescreen.onTraining ? "Continue Day" : "Start Day"
 
             onClicked: {
                 if (basescreen.onTraining) {
-                    ThreadManager.startDay();
-                } else {
                     ScreenManager.goTo("Exercise_Screen");
+                } else {
+                    ThreadManager.startDay();
                 }
             }
         }

@@ -1,15 +1,18 @@
 /* LIST OF CONTENTS
- * - (int, QObject *) ThreadWorker::ThreadWorker | 19 - 25 | 14
- * - nil ThreadWorker::~ThreadWorker | 27 - 29 | 14
- * - void () ThreadWorker::startDbConnection | 31 - 70 | 19
- * - QString (QString, QString) ThreadWorker::callQuery | 72 - 94 | 22
- * - void () ThreadWorker::startDay | 96 - 118 | 19
- * - void () ThreadWorker::getExerciseData | 120 - 195 | 19
- * - void (QList<Record>) ThreadWorker::completeExercise | 197 - 268 | 19
- * - void () ThreadWorker::getOnTraining | 270 - 296 | 19
+ * - (int, QObject *) ThreadWorker::ThreadWorker | 22 - 28 | 14
+ * - nil ThreadWorker::~ThreadWorker | 30 - 32 | 14
+ * - void () ThreadWorker::startDbConnection | 34 - 73 | 19
+ * - QString (QString, QString) ThreadWorker::callQuery | 75 - 102 | 22
+ * - void () ThreadWorker::startDay | 104 - 126 | 19
+ * - void () ThreadWorker::getExerciseData | 128 - 203 | 19
+ * - void (QList<Record>) ThreadWorker::completeExercise | 205 - 276 | 19
+ * - void () ThreadWorker::getOnTraining | 278 - 304 | 19
+ * - void () ThreadWorker::getTodayRecords | 306 - 355 | 19
+ * - void () ThreadWorker::completeTraining | 357 - 424 | 19
  * END OF CONTENTS */
 
 #include "thread_worker.h"
+#include <qcontainerfwd.h>
 #include <qfiledevice.h>
 #include <qhashfunctions.h>
 #include <qlist.h>
@@ -80,8 +83,13 @@ QString ThreadWorker::callQuery(QString filePath, QString queryTitle) {
 
   QString fileContents = sqlFile.readAll();
   QStringList textBlocks = fileContents.split(";");
+  QString title = queryTitle.trimmed();
   for (QString block : textBlocks) {
-    if (block.contains(queryTitle)) {
+    QString blockTitle = block.trimmed().section('\n', 0, 0).trimmed();
+    if (blockTitle.startsWith("--")) {
+      blockTitle = blockTitle.mid(2).trimmed();
+    }
+    if (blockTitle == title) {
       qInfo() << "Successfully found the query" << queryTitle << "on the file"
               << filePath;
       qDebug() << block;
@@ -203,7 +211,7 @@ void ThreadWorker::completeExercise(QList<Record> records) {
   QString rawQuery;
   bool dayCompleted = false;
 
-  rawQuery = callQuery(":SQL/Records.sql", "setRecord");
+  rawQuery = callQuery(":SQL/Records.sql", "setTodayRecord");
   if (rawQuery.isEmpty()) {
     emit completeTask();
     return;
@@ -293,5 +301,125 @@ void ThreadWorker::getOnTraining() {
   }
   emit gotOnTraining(onTraining);
 
+  emit completeTask();
+}
+
+void ThreadWorker::getTodayRecords() {
+  emit addTask();
+
+  QSqlDatabase db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  QString rawQuery;
+
+  QVariantList todayData;
+
+  QVariantMap listElement;
+  QString exercise;
+  QVariantList records;
+  QVariantMap record;
+
+  rawQuery = callQuery(":SQL/Records.sql", "getTodayRecords");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    qInfo() << "Succesfully got the data from today records view table";
+    while (query.next()) {
+      record.clear();
+      if (exercise == "") {
+        exercise = query.value(0).toString();
+      } else if (exercise != query.value(0).toString()) {
+        listElement.insert("name", exercise);
+        listElement.insert("records", records);
+        todayData.append(listElement);
+        records.clear();
+        listElement.clear();
+        exercise = query.value(0).toString();
+      }
+
+      record.insert("resistance", query.value(1).toString());
+      record.insert("reps", query.value(2).toString());
+      record.insert("effort", query.value(3).toString());
+      record.insert("notes", query.value(4).toString());
+      records.append(record);
+    }
+  } else {
+    qWarning() << "Failed to get the data from today records view table";
+  }
+
+  emit gotTodayRecords(todayData);
+
+  emit completeTask();
+}
+
+void ThreadWorker::completeTraining() {
+  emit addTask();
+
+  QSqlDatabase db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  QString rawQuery;
+
+  rawQuery = callQuery(":SQL/User.sql", "dayCompleted");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    qInfo() << "Updated on training to false";
+  } else {
+    qWarning() << "Error updating on training value"
+               << query.lastError().text();
+  }
+
+  query.clear();
+  rawQuery = callQuery(":SQL/Records.sql", "setRecords");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    qInfo() << "Sent today records to records table";
+  } else {
+    qWarning() << "Error sending today records to records table"
+               << query.lastError().text();
+  }
+
+  query.clear();
+  rawQuery = callQuery(":SQL/Records.sql", "clearTodayRecords");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    qInfo() << "Successfully cleared today records";
+  } else {
+    qWarning() << "Failed to clear today records" << query.lastError().text();
+  }
+
+  query.clear();
+  rawQuery = callQuery(":SQL/Records.sql", "resetTodayRecords");
+  if (rawQuery.isEmpty()) {
+    emit completeTask();
+    return;
+  }
+
+  query.prepare(rawQuery);
+  if (query.exec()) {
+    qInfo() << "Succesfully reset today records count";
+  } else {
+    qWarning() << "Failed to reset today records count"
+               << query.lastError().text();
+  }
+
+  emit completedTraining();
   emit completeTask();
 }

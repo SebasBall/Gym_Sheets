@@ -68,3 +68,33 @@ CREATE TABLE User (
 INSERT INTO User (Id, CurrentDay, CurrentExercise, NumExercisesToday, OnTraining)
 VALUES
 (1,1,1,1,false);
+
+CREATE TABLE TodayRecords (
+	Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ExerciseId INTEGER NOT NULL,
+    "Order" INTEGER NOT NULL,
+    Resistance TEXT NOT NULL,
+    Reps TEXT NOT NULL,
+    Notes TEXT,
+	Training INT NOT NULL,
+	UNIQUE (ExerciseId, "Order", Training),
+    FOREIGN KEY (ExerciseId, "Order") REFERENCES Series(ExerciseId, "Order") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE VIEW TodayRecordsView AS
+SELECT 
+	r.id,
+	e.Name,
+	r.ExerciseId,
+	r.Resistance,
+	r.Reps,
+	st.Type AS Effort,
+	r.Notes,
+	r.Training
+FROM TodayRecords r
+JOIN Series s ON 
+	r.ExerciseId = s.ExerciseId AND r."Order" = s."Order"
+JOIN SeriesTypes st ON
+	s.SeriesType = st.Id
+JOIN Exercises e ON
+	r.ExerciseId = e.Id;

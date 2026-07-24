@@ -17,3 +17,6 @@ UPDATE User SET CurrentExercise = CurrentExercise + 1;
 
 -- getOnTraining
 SELECT OnTraining FROM User;
+
+-- dayCompleted
+UPDATE User SET OnTraining = false;

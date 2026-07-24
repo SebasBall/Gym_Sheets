@@ -40,7 +40,7 @@ float SvgIcon::updateViewPort() {
   float strokeWidth;
   if (!(m_svgStrokeWidth > 0)) {
     m_viewport.setCoords(0, 0, width(), height());
-  } else {
+  } else if (svgFirstLoad) {
     float xScale = m_svgViewBoxWidth / 100;
     float yScale = m_svgViewBoxHeight / 100;
 

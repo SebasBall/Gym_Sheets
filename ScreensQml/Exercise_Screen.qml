@@ -4,8 +4,9 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import "../GeneralQml"
 import "../AppQml"
-// import "../PreviewQml"
 import "Exercise_Screen_Logic.js" as Logic
+
+// import "../PreviewQml"
 
 BaseScreen {
     id: basescreen
@@ -50,7 +51,7 @@ BaseScreen {
         target: ThreadManager
         function onCompletedExercise(dayCompleted) {
             if (dayCompleted) {
-                ScreenManager.goTo("Main_Screen");
+                ScreenManager.goTo("CompleteDay_Screen");
             } else {
                 ScreenManager.reload();
             }
@@ -242,14 +243,14 @@ BaseScreen {
                                     p_rectangleColor: model.isTitle ? Colors.primary : "white"
                                     p_textBold: model.isTitle
                                     p_borderArray: {
-                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                        if (recordColumn.model.notes == "" && model.isEnd) {
                                             return [1, 1, 1, 0];
                                         } else {
                                             return [1, 0, 1, 0];
                                         }
                                     }
                                     p_radiusArray: {
-                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                        if (recordColumn.model.notes == "" && model.isEnd) {
                                             return [0, 0, 1, 0];
                                         } else {
                                             return [0, 0, 0, 0];
@@ -269,7 +270,7 @@ BaseScreen {
                                     p_textColor: model.isTitle ? "white" : Colors.dark
                                     p_rectangleColor: model.isTitle ? Colors.primary : "white"
                                     p_borderArray: {
-                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                        if (recordColumn.model.notes == "" && model.isEnd) {
                                             return [1, 1, 1, 0];
                                         } else {
                                             return [1, 0, 1, 0];
@@ -289,14 +290,14 @@ BaseScreen {
                                     p_textColor: model.isTitle ? "white" : Colors.dark
                                     p_rectangleColor: model.isTitle ? Colors.primary : "white"
                                     p_borderArray: {
-                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                        if (recordColumn.model.notes == "" && model.isEnd) {
                                             return [1, 1, 1, 1];
                                         } else {
                                             return [1, 0, 1, 1];
                                         }
                                     }
                                     p_radiusArray: {
-                                        if (recordColumn.model.notes.text == "" & model.isEnd) {
+                                        if (recordColumn.model.notes == "" && model.isEnd) {
                                             return [0, 0, 0, 1];
                                         } else {
                                             return [0, 0, 0, 0];
@@ -306,15 +307,16 @@ BaseScreen {
                             }
                         }
                         Loader {
-                            active: recordColumn.model.notes.text != ""
+                            // Updated: checks string directly
+                            active: recordColumn.model.notes != ""
                             sourceComponent: AppLabel {
-                                property var model: recordColumn.model.notes
+                                property string noteText: recordColumn.model.notes
 
                                 width: recordsDataView.width
 
                                 // This is done because for some reason the data received from the
                                 // sqldatabase sends \\n instead of \n
-                                p_text: model.text.replace(/\\n/g, "\n")
+                                p_text: noteText.replace(/\\n/g, "\n")
                                 p_textSize: 14
                                 p_textMargins: 8
                                 p_textColor: Colors.dark
@@ -327,6 +329,7 @@ BaseScreen {
                     }
                 }
             }
+
             DelegateChoice {
                 roleValue: "1Label"
                 AppLabel {
@@ -447,7 +450,7 @@ BaseScreen {
                 roleValue: "1Button"
                 AppButton {
                     width: recordsDataView.width
-                    p_text: "Complete Training"
+                    p_text: "Complete Exercise"
 
                     onClicked: {
                         Logic.completeExercise(recordsModel, basescreen, ThreadManager);
